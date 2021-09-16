@@ -1,7 +1,5 @@
-# BitDAO Token Contract
-The BitDAO contract as deployed on Mainnet
-
-The aggregated solidity source file was lifted from the BitDAO contract address `0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5` on [Etherscan](https://etherscan.io/address/0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5#code)
+# Solidity Project Template
+Providing a project with a template for the files, folder structure, dependencies, scripting, configuration (local & remote) and development standards used in a WindRanger Soldity project with TypeScript tests.
 
 ## Development Process
 ### Git
@@ -21,31 +19,57 @@ Messages for commit and merge operations enter into the browsable log of project
 Consistency helps readers tremendously, please follow Conventional Commits
 https://www.conventionalcommits.org/en/v1.0.0/
 
-### Sample Hardhat Project
+### TypeScript Style Guide
+Follow the Google TypeScript style guide, as they're sensible.
+https://google.github.io/styleguide/tsguide.html
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+### Installation, building and running
+Git clone, then from the project root execute
 
-Try running some of the following tasks:
-
+#### Install
+To retrieve the project dependencies and before any further tasks will run correctly
 ```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat node
-npx hardhat help
+npm install
 ```
 
-#### Tests
+#### Husky Git Commit Hooks
+To enable Husky commit hooks to trigger the lint-staged behaviour of formatting and linting the staged files prior
+before committing, prepare your repo with `prepare`.
+
+```shell
+npm run prepare
+```
+
+#### Installing
+
+#### Build and Test
+```shell
+npm run build
+npm test
+```
+
+If you make changes that don't get picked up then add a clean into the process
+```shell
+npm run clean
+npm run build
+npm test
+```
+
+
+### Hardhat
+If you want to avoid using the convience scripts, then you can execute against Hardhat directly.
+
+#### All tests
 Target to run all the mocha tests found in the ```/test``` directory, transpiled as necessary.
 ```shell
 npx hardhat test
 ```
 
+#### Single test
 Run a single test (or a regex of tests), then pass in as an argument.
 ```shell
  npx hardhat test .\test\sample.test.ts
 ```
-
 
 #### Scripts
 The TypeScript transpiler will automatically as needed, execute through HardHat for the instantiated environment
@@ -60,31 +84,4 @@ Logging is performed with Bunyan
 To have the JSON logging output into a more human-readable form, pipe the stdout to the Bunyan CLI tool.
 ```shell
 npx hardhat accounts | npx bunyan
-```
-
-### Style Guide
-Follow the Google TypeScript style guide, as they're sensible.
-https://google.github.io/styleguide/tsguide.html
-
-### Installation, building and running
-Git clone, then from the project root execute
-
-```shell
-npm run build
-npm run test
-```
-
-If you make changes that don't get picked up then add a clean into the process
-```shell
-npm run clean
-npm run build
-npm run test
-```
-
-#### Husky Git Commit Hooks
-To enable Husky commit hooks to trigger the lint-staged behaviour of formatting and linting the staged files prior 
-before committing, prepare your repo with `prepare`.
-
-```shell
-npm run prepare
 ```
