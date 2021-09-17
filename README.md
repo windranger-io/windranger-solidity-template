@@ -3,13 +3,22 @@ Providing a project with a template for the files, folder structure, dependencie
 
 ## Development Process
 ### Git
+Suite of ideas about git (summarised consensus of `#git`) by Set Robertson.
+https://sethrobertson.github.io/GitBestPractices/
+
+#### Commit early, commit often
+Git works best, and works in your favor, when you commit your work often. 
+Instead of waiting to make the commit perfect, working in small chunks and continually committing your work, can aid with strealining development and rapid iterations and visibility / transparency.
+Commit early and commit often combines will with the use of pull requests and squashed merges, as they create only single log entry.
+
+#### Branch per a feature
 Trunk based approach with a single main branch and ephemeral side branches.
 https://trunkbaseddevelopment.com/
 
 Create yourself a user fork off the main.
-For every changeset create a branch off your fork.
-When the changeset is complete, create a pull request to merge the changeset to main.
-After the changeset is merged, updated your fork from the upstream (main)
+For every change set create a branch off your fork.
+When the change set is complete, create a pull request to merge the changeset to main.
+After the change set is merged, updated your fork from the upstream (main)
 
 Branch protection can be used to enforce this behaviour for public repo's or private repo's when owned by Pro, Team and Enterprise organisations.
 
