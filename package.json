@@ -16,7 +16,9 @@
   "scripts": {
     "build": "hardhat compile",
     "clean": "hardhat clean",
-    "format": "prettier ./**/*.ts --write",
+    "format": "format-ts && format-sol",
+    "format-ts": "prettier ./**/*.ts --write",
+    "format-sol": "prettier ./**/*.sol --write",
     "lint": "eslint . --ext .ts",
     "prepare": "husky install",
     "test": "mocha --exit --recursive --require ts-node/register 'test/**/*.test.ts'"
@@ -41,7 +43,8 @@
     "hardhat": "^2.6.2",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
-    "prettier": "^2.3.2",
+    "prettier": "^2.4.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.18",
     "ts-node": "^10.2.1",
     "typechain": "^5.1.2",
     "typescript": "^4.4.2"
