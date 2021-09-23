@@ -35,6 +35,10 @@ https://google.github.io/styleguide/tsguide.html
 ### Installation, building and running
 Git clone, then from the project root execute
 
+### Solidity Style Guide
+Follow the Soldity docs guide.
+https://docs.soliditylang.org/en/v0.8.7/style-guide.html
+
 #### Install
 To retrieve the project dependencies and before any further tasks will run correctly
 ```shell
