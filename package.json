@@ -1,6 +1,6 @@
 {
   "name": "solidity-project-template",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "description": "Everything you need for creating Solidity smart contract with TypeScript testing",
   "private": true,
   "directories": {
