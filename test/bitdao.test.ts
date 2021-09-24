@@ -9,6 +9,7 @@ import {before} from 'mocha'
 import {solidity} from 'ethereum-waffle'
 import {BitDAO} from '../typechain'
 
+// Wires up Waffle with Chai
 chai.use(solidity)
 
 const TEN_OCTILLIAN = 10000000000000000000000000000n
