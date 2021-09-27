@@ -10,19 +10,19 @@
         "printWidth": 80,
         "semi": false,
         "singleQuote": true,
-        "tabWidth": 2,
+        "tabWidth": 4,
         "trailingComma": "none"
       }
     },
     {
       "files": "*.sol",
       "options": {
-        "printWidth": 80,
-        "tabWidth": 4,
-        "useTabs": false,
-        "singleQuote": false,
         "bracketSpacing": false,
-        "explicitTypes": "always"
+        "explicitTypes": "always",
+        "printWidth": 80,
+        "singleQuote": false,
+        "tabWidth": 4,
+        "useTabs": false
       }
     }
   ]
