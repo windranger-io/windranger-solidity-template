@@ -49,7 +49,7 @@ describe('BitDAO token contract', () => {
         )
     })
 
-    describe('delegate', async () => {
+    describe('delegate', () => {
         beforeEach(async () => {
             admin = await signer(0)
             delegateOne = await signer(1)
