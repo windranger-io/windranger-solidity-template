@@ -15,7 +15,7 @@ chai.use(solidity)
 const TEN_OCTILLIAN = 10000000000000000000000000000n
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-describe('BitDAO token contract', async () => {
+describe('BitDAO token contract', () => {
     before(async () => {
         admin = await signer(0)
         dao = await bitDao(admin)
@@ -49,7 +49,7 @@ describe('BitDAO token contract', async () => {
         )
     })
 
-    describe('delegate', async () => {
+    describe('delegate', () => {
         beforeEach(async () => {
             admin = await signer(0)
             delegateOne = await signer(1)
