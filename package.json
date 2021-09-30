@@ -23,7 +23,7 @@
     "lint-ts": "eslint . --ext .ts",
     "lint-sol": "solhint ./contracts/**/*.sol",
     "prepare": "husky install",
-    "test": "mocha --exit --recursive --require ts-node/register 'test/**/*.test.ts'"
+    "test": "mocha --timeout 10000 --exit --recursive --require ts-node/register 'test/**/*.test.ts'"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
