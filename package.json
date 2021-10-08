@@ -60,7 +60,7 @@
       "npm run format"
     ],
     "*.ts": [
-      "npm run lint-ts --fix"
+      "npm run lint-ts -- --fix"
     ]
   }
 }
