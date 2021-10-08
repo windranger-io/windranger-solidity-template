@@ -57,8 +57,7 @@
   },
   "lint-staged": {
     "*": [
-      "npm run format",
-      "npm run lint-ts --fix"
+      "npm run format"
     ]
   }
 }
