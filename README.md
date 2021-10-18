@@ -14,7 +14,7 @@ https://sethrobertson.github.io/GitBestPractices/
 #### Commit early, commit often
 
 Git works best, and works in your favor, when you commit your work often.
-Instead of waiting to make the commit perfect, working in small chunks and continually committing your work, can aid with strealining development and rapid iterations and visibility / transparency.
+Instead of waiting to make the commit perfect, working in small chunks and continually committing your work, can aid with streamlining development and rapid iterations and visibility / transparency.
 Commit early and commit often combines will with the use of pull requests and squashed merges, as they create only single log entry.
 
 #### Branch per a feature
@@ -24,7 +24,7 @@ https://trunkbaseddevelopment.com/
 
 Create yourself a user fork off the main.
 For every change set create a branch off your fork.
-When the change set is complete, create a pull request to merge the changeset to main.
+When the change set is complete, create a pull request to merge the changes to main.
 After the change set is merged, updated your fork from the upstream (main)
 
 Branch protection can be used to enforce this behaviour for public repo's or private repo's when owned by Pro, Team and Enterprise organisations.
