@@ -48,6 +48,14 @@ https://docs.soliditylang.org/en/v0.8.7/style-guide.html
 
 ---
 
+## Open Communication
+
+To keep discussions and any resulting decisions transparent, while also supporting asynchronus interaction we primiarily use GitHub Isues and Pull Requests.
+
+`Pull Request` are used to review proposed additions and changes, while for anything in existing code or design (after change merged from a PR) then raise a GitHub `Issue` template type of`Question`.
+
+---
+
 ## Project Installation, building and running
 
 Git clone, then from the project root execute
