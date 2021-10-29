@@ -2,7 +2,7 @@
 
 ### Git
 
-Suite of ideas about git (summarised consensus of `#git`) by Set Robertson.
+Ideas about Git usage (summarised consensus of `#git`) by Set Robertson.
 https://sethrobertson.github.io/GitBestPractices/
 
 #### Commit early, commit often
@@ -25,7 +25,7 @@ Branch protection can be used to enforce this behaviour for public repo's or pri
 
 #### Git messages
 
-Messages for commit and merge operations enter into the browsable log of project changes, providing a historical context for the project's development.
+Messages for `git commit` and `git merge` operations comprise browsable log (`git log`) of project changes, providing historical progression of the project's development.
 
 Consistency helps readers tremendously, please follow Conventional Commits
 https://www.conventionalcommits.org/en/v1.0.0/
