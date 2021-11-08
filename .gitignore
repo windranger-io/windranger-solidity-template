@@ -79,6 +79,3 @@ doc/
 
 # Jetbrains IDE
 .idea
-
-# Node lock file
-package-lock.json
