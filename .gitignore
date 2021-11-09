@@ -79,3 +79,6 @@ doc/
 
 # Jetbrains IDE
 .idea
+
+# NPM generated lock (versions) file
+package-lock.json
