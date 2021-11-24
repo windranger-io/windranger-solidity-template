@@ -19,7 +19,7 @@ Git clone, then from the project root execute
 To retrieve the project dependencies and before any further tasks will run correctly
 
 ```shell
-npm install
+npm ci
 ```
 
 #### Husky Git Commit Hooks
