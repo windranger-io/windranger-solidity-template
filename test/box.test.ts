@@ -17,8 +17,10 @@ chai.use(solidity)
 
 // Start with the contract name as the top level descriptor
 describe('Box', () => {
-    // Once and before any test, get a handle on the signer and observer
-    // (only put variables in before, when their state is not affected by any test)
+    /*
+     * Once and before any test, get a handle on the signer and observer
+     * (only put variables in before, when their state is not affected by any test)
+     */
     before(async () => {
         admin = await signer(0)
         observer = await signer(1)
@@ -32,8 +34,10 @@ describe('Box', () => {
 
     // Inner describes use the name or idea for the function they're unit testing
     describe('store', () => {
-        // Describe it, what unit of logic is being tested
-        // Keep in mind the full composition of the name: Box > store > value
+        /*
+         * Describe 'it', what unit of logic is being tested
+         * Keep in mind the full composition of the name: Box > store > value
+         */
         it('value', async () => {
             const value = 'An important collection of characters'
 
@@ -51,8 +55,10 @@ describe('Box', () => {
         })
     })
 
-    // Top level IT describes complex interactions
-    // Beyond the scope of a single function, closer to a use case flow than UT
+    /*
+     * Top level IT describes complex interactions
+     * Beyond the scope of a single function, closer to a use case flow than UT
+     */
     it('owner overwrites initial value, with observer querying everytime', async () => {
         const valueOne = 'First selection of important characters'
         const receiptOne = await successfulTransaction(
