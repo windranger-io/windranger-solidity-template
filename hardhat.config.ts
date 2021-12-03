@@ -4,8 +4,9 @@ import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-waffle'
 import {log} from './config/logging'
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
+/*
+ * This is a sample Hardhat task. To learn how to create your own go to https://hardhat.org/guides/create-task.html
+ */
 task('accounts', 'Prints the list of accounts', async (args, hre) => {
     const accounts = await hre.ethers.getSigners()
 
@@ -22,9 +23,12 @@ task('blockNumber', 'Prints the current block number', async (_, {ethers}) => {
     })
 })
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
-// At time of authoring 0.8.4 was the latest version supported by Hardhat
+/*
+ * You need to export an object to set up your config
+ * Go to https://hardhat.org/config/ to learn more
+ *
+ * At time of authoring 0.8.4 was the latest version supported by Hardhat
+ */
 export default {
     networks: {
         hardhat: {
@@ -42,13 +46,13 @@ export default {
     solidity: {
         compilers: [
             {
-                version: '0.7.6'
-                // settings: {
-                //   optimizer: {
-                //     enabled: true,
-                //     runs: 200
-                //   }
-                // }
+                version: '0.7.6',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    }
+                }
             },
             {
                 version: '0.8.4'
