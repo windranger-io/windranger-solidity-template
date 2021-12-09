@@ -6,7 +6,7 @@ import '@nomiclabs/hardhat-ethers'
 import chai, {expect} from 'chai'
 import {before} from 'mocha'
 import {solidity} from 'ethereum-waffle'
-import {Box} from '../typechain'
+import {Tub} from '../typechain'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {successfulTransaction} from './framework/transaction'
@@ -22,7 +22,7 @@ chai.use(solidity)
  */
 
 // Start with the contract name as the top level descriptor
-describe('Box', () => {
+describe('Tub', () => {
     /*
      * Once and before any test, get a handle on the signer and observer
      * (only put variables in before, when their state is not affected by any test)
@@ -34,8 +34,7 @@ describe('Box', () => {
 
     // Before each test, deploy a fresh box (clean starting state)
     beforeEach(async () => {
-        box = await deployContract<Box>('Box')
-        await successfulTransaction(box.initialize())
+        tub = await deployContract<Tub>('Tub')
     })
 
     // Inner describes use the name or idea for the function they're unit testing
@@ -47,15 +46,15 @@ describe('Box', () => {
         it('value', async () => {
             const value = 'An important collection of characters'
 
-            const receipt = await successfulTransaction(box.store(value))
+            const receipt = await successfulTransaction(tub.store(value))
 
             verifyStoreEvent(receipt, value)
-            expect(await box.value()).equals(value)
+            expect(await tub.value()).equals(value)
         })
 
         // Modifier checks contain the flattened and spaced modifier name
         it('only owner', async () => {
-            await expect(box.connect(observer).store('')).to.be.revertedWith(
+            await expect(tub.connect(observer).store('')).to.be.revertedWith(
                 'Ownable: caller is not the owner'
             )
         })
@@ -68,24 +67,24 @@ describe('Box', () => {
     it('owner overwrites initial value, with observer verifying', async () => {
         const valueOne = 'First selection of important characters'
         const receiptOne = await successfulTransaction(
-            box.connect(admin).store(valueOne)
+            tub.connect(admin).store(valueOne)
         )
 
         verifyStoreEvent(receiptOne, valueOne)
-        expect(await box.connect(observer).value()).equals(valueOne)
+        expect(await tub.connect(observer).value()).equals(valueOne)
 
         // Overwriting the stored value
         const valueTwo =
             'Second selection of important characters, overwriting the first'
         const receiptTwo = await successfulTransaction(
-            box.connect(admin).store(valueTwo)
+            tub.connect(admin).store(valueTwo)
         )
 
         verifyStoreEvent(receiptTwo, valueTwo)
-        expect(await box.connect(observer).value()).equals(valueTwo)
+        expect(await tub.connect(observer).value()).equals(valueTwo)
     })
 
     let admin: SignerWithAddress
     let observer: SignerWithAddress
-    let box: Box
+    let tub: Tub
 })
