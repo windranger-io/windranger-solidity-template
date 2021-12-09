@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  *
  * @dev Event emitted on storing the value.
  */
-contract Box is Ownable {
+contract Tub is Ownable {
     string private _value;
 
     event Store(string value);
