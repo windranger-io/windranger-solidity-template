@@ -24,6 +24,7 @@ import {ethers} from 'ethers'
 import {
     Box,
     BoxExtension,
+    BoxTransparentProxy,
     BoxWithConstructor,
     BoxWithEnum,
     BoxWithImmutableField,
@@ -127,6 +128,17 @@ describe('BondFactory contract', () => {
                 )
             ).to.be.eventually.rejectedWith(
                 'Use of selfdestruct is not allowed'
+            )
+        })
+
+        it('to UUPS type only', async () => {
+            await expect(
+                upgradeContract<BoxTransparentProxy>(
+                    'BoxTransparentProxy',
+                    bonds.address
+                )
+            ).to.be.eventually.rejectedWith(
+                'Requested an upgrade of kind transparent but proxy is uups'
             )
         })
 
