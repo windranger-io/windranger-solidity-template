@@ -15,7 +15,7 @@ contract BoxTransparentProxy is OwnableUpgradeable {
         _value = "8";
     }
 
-    function initialize() public virtual initializer {
+    function initialize() external virtual initializer {
         __Ownable_init();
     }
 

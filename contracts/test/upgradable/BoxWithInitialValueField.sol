@@ -9,11 +9,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  */
 contract BoxWithInitialValueField is OwnableUpgradeable, UUPSUpgradeable {
     string private _value;
-    uint256 private _initiallyPopulated = 12;
+    uint256 private _initiallyPopulatedValue = 12;
 
     event Store(string value);
 
-    function initialize() public virtual initializer {
+    function initialize() external virtual initializer {
         __Ownable_init();
     }
 
@@ -21,6 +21,10 @@ contract BoxWithInitialValueField is OwnableUpgradeable, UUPSUpgradeable {
         _value = boxValue;
 
         emit Store(_value);
+    }
+
+    function anotherStore(uint256 anotherValue) external onlyOwner {
+        _initiallyPopulatedValue = anotherValue;
     }
 
     function value() external view returns (string memory) {

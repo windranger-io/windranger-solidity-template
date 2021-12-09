@@ -17,7 +17,7 @@ contract BoxWithStruct is OwnableUpgradeable, UUPSUpgradeable {
 
     event Store(string value);
 
-    function initialize() public virtual initializer {
+    function initialize() external virtual initializer {
         __Ownable_init();
 
         _value = "13";

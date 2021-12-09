@@ -16,7 +16,7 @@ contract BoxWithSelfDestruct is OwnableUpgradeable, UUPSUpgradeable {
         selfdestruct(payable(owner()));
     }
 
-    function initialize() public virtual initializer {
+    function initialize() external virtual initializer {
         __Ownable_init();
     }
 

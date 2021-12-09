@@ -104,7 +104,7 @@ describe('BondFactory contract', () => {
                     bonds.address
                 )
             ).to.be.eventually.rejectedWith(
-                'Variable `_initiallyPopulated` is assigned an initial value'
+                'Variable `_initiallyPopulatedValue` is assigned an initial value'
             )
         })
 
