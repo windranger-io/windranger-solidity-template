@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "../Box.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * Contract matching the data layout of the Box, but with an Struct definition.
  */
-contract BoxWithStruct is OwnableUpgradeable {
+contract BoxWithStruct is OwnableUpgradeable, UUPSUpgradeable {
     struct CookiesEaten {
         uint256 count;
     }
@@ -32,4 +33,10 @@ contract BoxWithStruct is OwnableUpgradeable {
     function value() external view returns (string memory) {
         return _value;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
 }

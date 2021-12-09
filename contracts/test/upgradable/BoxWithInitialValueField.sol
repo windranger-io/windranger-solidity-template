@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "../Box.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * Contract matching the data layout of the Box, but with a field initialised on construction.
  */
-contract BoxWithInitialValueField is OwnableUpgradeable {
+contract BoxWithInitialValueField is OwnableUpgradeable, UUPSUpgradeable {
     string private _value;
     uint256 private _initiallyPopulated = 12;
 
@@ -25,4 +26,10 @@ contract BoxWithInitialValueField is OwnableUpgradeable {
     function value() external view returns (string memory) {
         return _value;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
 }

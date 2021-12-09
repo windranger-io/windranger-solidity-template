@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "../Box.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * Contract matching the data layout of the Box, but with a constructor.
  */
-contract BoxWithConstructor is OwnableUpgradeable {
+contract BoxWithConstructor is OwnableUpgradeable, UUPSUpgradeable {
     string private _value;
 
     event Store(string value);
@@ -28,4 +29,10 @@ contract BoxWithConstructor is OwnableUpgradeable {
     function value() external view returns (string memory) {
         return _value;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
 }

@@ -2,18 +2,17 @@
 pragma solidity ^0.8.0;
 
 import "../Box.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
- * Contract matching the data layout of the Box, but with an self destruct used in a new function.
+ * Contract matching the data layout of the Box, needing a Transparent proxy instead of UUPS.
  */
-contract BoxWithSelfDestruct is OwnableUpgradeable, UUPSUpgradeable {
+contract BoxTransparentProxy is OwnableUpgradeable {
     string private _value;
 
     event Store(string value);
 
-    function doomed() external payable onlyOwner {
-        selfdestruct(payable(owner()));
+    constructor() {
+        _value = "8";
     }
 
     function initialize() public virtual initializer {
@@ -29,10 +28,4 @@ contract BoxWithSelfDestruct is OwnableUpgradeable, UUPSUpgradeable {
     function value() external view returns (string memory) {
         return _value;
     }
-
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlyOwner
-    {}
 }

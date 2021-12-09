@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "../Box.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * Contract matching the data layout of the Box, but with an Enum definition.
  */
-contract BoxWithEnum is OwnableUpgradeable {
+contract BoxWithEnum is OwnableUpgradeable, UUPSUpgradeable {
     enum COUNT {
         ZERO,
         ONE,
@@ -34,4 +35,10 @@ contract BoxWithEnum is OwnableUpgradeable {
     function value() external view returns (string memory) {
         return _value;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
 }
