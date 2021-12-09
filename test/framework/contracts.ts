@@ -46,7 +46,7 @@ export async function deployContractWithProxy<T extends DeployableContract<T>>(
  * Upgrades an implementation contract that has a proxy contract in front.
  *
  * @param name the case sensitive name of the contract in the Solidity file.
- * @param upgrading existing address of a proxy with the implementation behind.
+ * @param address existing address of a proxy with the implementation behind.
  */
 export async function upgradeContract<T extends DeployableContract<T>>(
     name: string,
@@ -54,8 +54,6 @@ export async function upgradeContract<T extends DeployableContract<T>>(
 ): Promise<T> {
     const factory = await ethers.getContractFactory(name)
     const contract = <T>(<unknown>await upgrades.upgradeProxy(address, factory))
-
-    upgrades.admin.changeProxyAdmin
 
     return contract.deployed()
 }

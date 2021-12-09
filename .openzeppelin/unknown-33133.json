@@ -38,32 +38,32 @@
     },
     {
       "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
-      "txHash": "0xb3ea824e0e8a1f5b8fd38b6f5938805b8bc6cee5abc010d9359a377fd366258e",
+      "txHash": "0x37d9278a093b8303859b44b76ebd6d01fd10549f9291e65c99346fd6fda4d4de",
       "kind": "uups"
     },
     {
       "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "txHash": "0xbbb4918c19f8c3444ac11f7d8223a3fff8d3fa6a88da443db89b8a322d0040bf",
+      "txHash": "0x80ee87905ae004a0248753548b2fd0e8bf0494daa543b744707245b10b5b407b",
       "kind": "uups"
     },
     {
       "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
-      "txHash": "0x0515abf08678dccb7694ddb5b0a1e255dd918c32ac333f9502e18d8ea17dbbaa",
+      "txHash": "0x525ca1fd14ceb3910ed2a11d0aeccd4270439eadb39442d4eedc44873c79c5a8",
       "kind": "uups"
     },
     {
       "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
-      "txHash": "0x81598325302fac59e4f628e3a68f08cf74febcedbd10723234a800914c7865ed",
+      "txHash": "0x89f8ba9593b0c81728acdc7d4294cd022d83f172d74a30dd682816065aa41e9b",
       "kind": "uups"
     },
     {
       "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
-      "txHash": "0xc58d6b1b07dc7e4a4a61257639db5b1c285738b8b5a1d92553120d8030bbf74a",
+      "txHash": "0xbe7fb4ac7e8ffe577aac436c1156de9cbc89129aa7f7d25544099a5c1675627c",
       "kind": "uups"
     },
     {
       "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      "txHash": "0x197006f987a7fec6304b380bc11d0b178d73bbea43d8283614b89f4a3e9eb89d",
+      "txHash": "0x28c2ef92a0290f1e44d568bba2c099d4c5178ab07155c9e844a819523ed86ebd",
       "kind": "uups"
     }
   ],
@@ -131,6 +131,97 @@
           },
           "t_uint256": {
             "label": "uint256"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "b47dfd57073d312e32289b02c3503762393e9fda1adef9e468b9327413f2089e": {
+      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "txHash": "0xaacf571a8e033949a38fb460df11c6bb795cb4f7d04e65fff75aa914b0a2227d",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:37"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:42"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "ERC1967UpgradeUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "contract": "UUPSUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:81"
+          },
+          {
+            "contract": "BoxWithStruct",
+            "label": "_value",
+            "type": "t_string_storage",
+            "src": "contracts/test/upgradable/BoxWithStruct.sol:15"
+          },
+          {
+            "contract": "BoxWithStruct",
+            "label": "_consumption",
+            "type": "t_struct(CookiesEaten)1795_storage",
+            "src": "contracts/test/upgradable/BoxWithStruct.sol:16"
+          }
+        ],
+        "types": {
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_struct(CookiesEaten)1795_storage": {
+            "label": "struct BoxWithStruct.CookiesEaten",
+            "members": [
+              {
+                "label": "count",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
           },
           "t_address": {
             "label": "address"
@@ -226,100 +317,9 @@
         }
       }
     },
-    "b47dfd57073d312e32289b02c3503762393e9fda1adef9e468b9327413f2089e": {
-      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      "txHash": "0xadd6756b46b6f705b119c8048ad3bd2c7c14d9283c3372167763ca37bf9d7229",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:37"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:42"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "ERC1967UpgradeUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:215"
-          },
-          {
-            "contract": "UUPSUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:81"
-          },
-          {
-            "contract": "BoxWithStruct",
-            "label": "_value",
-            "type": "t_string_storage",
-            "src": "contracts/test/upgradable/BoxWithStruct.sol:15"
-          },
-          {
-            "contract": "BoxWithStruct",
-            "label": "_consumption",
-            "type": "t_struct(CookiesEaten)1719_storage",
-            "src": "contracts/test/upgradable/BoxWithStruct.sol:16"
-          }
-        ],
-        "types": {
-          "t_string_storage": {
-            "label": "string"
-          },
-          "t_struct(CookiesEaten)1719_storage": {
-            "label": "struct BoxWithStruct.CookiesEaten",
-            "members": [
-              {
-                "label": "count",
-                "type": "t_uint256"
-              }
-            ]
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          },
-          "t_address": {
-            "label": "address"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_bool": {
-            "label": "bool"
-          }
-        }
-      }
-    },
-    "40552f7699166011549d31db4c782bfa2076e5303e1ac0c52b7e8670b92acbf1": {
+    "2ee3fdb51bbe47590859870f532f0410b53b113e6940745e3809170cc03a578f": {
       "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-      "txHash": "0x036c571dae3c6557bdf800ecee7afb10a9394100c0c338b76080d796d4767406",
+      "txHash": "0x7623fe6e7e712ffdca08e3ab8e4bb34ea42e0242cf0e498cab02955f3cba95ee",
       "layout": {
         "storage": [
           {
@@ -373,7 +373,7 @@
           {
             "contract": "BoxWithEnum",
             "label": "_cookiesConsumed",
-            "type": "t_enum(COUNT)1425",
+            "type": "t_enum(Count)1052",
             "src": "contracts/test/upgradable/BoxWithEnum.sol:18"
           }
         ],
@@ -381,8 +381,8 @@
           "t_string_storage": {
             "label": "string"
           },
-          "t_enum(COUNT)1425": {
-            "label": "enum BoxWithEnum.COUNT",
+          "t_enum(Count)1052": {
+            "label": "enum BoxWithEnum.Count",
             "members": ["ZERO", "ONE", "TWO"]
           },
           "t_array(t_uint256)50_storage": {

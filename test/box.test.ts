@@ -65,7 +65,7 @@ describe('Box', () => {
      * Top level IT describes complex interactions
      * Beyond the scope of a single function, closer to a use case flow than UT
      */
-    it('owner overwrites initial value, with observer querying everytime', async () => {
+    it('owner overwrites initial value, with observer verifying', async () => {
         const valueOne = 'First selection of important characters'
         const receiptOne = await successfulTransaction(
             box.connect(admin).store(valueOne)

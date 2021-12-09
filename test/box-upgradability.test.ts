@@ -42,14 +42,13 @@ const MAXIMUM_WAIT_MS = 5000
 describe('BondFactory contract', () => {
     before(async () => {
         admin = await signer(0)
-        treasury = (await signer(1)).address
         nonAdmin = await signer(2)
     })
 
     beforeEach(async () => {
-        bonds = await deployContractWithProxy<Box>('Box')
+        box = await deployContractWithProxy<Box>('Box')
         upgradedListener = new EventListener<UpgradedEventArgs>(
-            bonds,
+            box,
             'Upgraded',
             (event) => upgradedEvent(event)
         )
@@ -57,11 +56,11 @@ describe('BondFactory contract', () => {
 
     describe('upgrade', () => {
         it('extension contract', async () => {
-            const beforeUpgradeAddress = bonds.address
+            const beforeUpgradeAddress = box.address
 
             const upgradedBonds = await upgradeContract<BoxExtension>(
                 'BoxExtension',
-                bonds.address
+                box.address
             )
 
             await occurrenceAtMost(
@@ -82,16 +81,16 @@ describe('BondFactory contract', () => {
         })
 
         it('new struct is fine', async () =>
-            upgradeContract<BoxWithStruct>('BoxWithStruct', bonds.address))
+            upgradeContract<BoxWithStruct>('BoxWithStruct', box.address))
 
         it('new enum is fine', async () =>
-            upgradeContract<BoxWithEnum>('BoxWithEnum', bonds.address))
+            upgradeContract<BoxWithEnum>('BoxWithEnum', box.address))
 
         it('no constructor', async () => {
             await expect(
                 upgradeContract<BoxWithConstructor>(
                     'BoxWithConstructor',
-                    bonds.address
+                    box.address
                 )
             ).to.be.eventually.rejectedWith(
                 'Contract `BoxWithConstructor` has a constructor'
@@ -102,7 +101,7 @@ describe('BondFactory contract', () => {
             await expect(
                 upgradeContract<BoxWithInitialValueField>(
                     'BoxWithInitialValueField',
-                    bonds.address
+                    box.address
                 )
             ).to.be.eventually.rejectedWith(
                 'Variable `_initiallyPopulatedValue` is assigned an initial value'
@@ -113,7 +112,7 @@ describe('BondFactory contract', () => {
             await expect(
                 upgradeContract<BoxWithImmutableField>(
                     'BoxWithImmutableField',
-                    bonds.address
+                    box.address
                 )
             ).to.be.eventually.rejectedWith(
                 'Variable `_neverGoingToChange` is immutable'
@@ -124,18 +123,18 @@ describe('BondFactory contract', () => {
             await expect(
                 upgradeContract<BoxWithSelfDestruct>(
                     'BoxWithSelfDestruct',
-                    bonds.address
+                    box.address
                 )
             ).to.be.eventually.rejectedWith(
                 'Use of selfdestruct is not allowed'
             )
         })
 
-        it('to UUPS type only', async () => {
+        it('only UUPS proxy', async () => {
             await expect(
                 upgradeContract<BoxTransparentProxy>(
                     'BoxTransparentProxy',
-                    bonds.address
+                    box.address
                 )
             ).to.be.eventually.rejectedWith(
                 'Requested an upgrade of kind transparent but proxy is uups'
@@ -143,13 +142,13 @@ describe('BondFactory contract', () => {
         })
 
         it('only owner', async () => {
-            expect(await bonds.owner()).equals(admin.address)
-            await bonds.transferOwnership(nonAdmin.address)
-            expect(await bonds.owner()).equals(nonAdmin.address)
+            expect(await box.owner()).equals(admin.address)
+            await box.transferOwnership(nonAdmin.address)
+            expect(await box.owner()).equals(nonAdmin.address)
 
             // upgrades are fixed to use the first signer (owner) account
             await expect(
-                upgradeContract<Box>('Box', bonds.address)
+                upgradeContract<Box>('Box', box.address)
             ).to.be.revertedWith(
                 "reverted with reason string 'Ownable: caller is not the owner"
             )
@@ -157,8 +156,7 @@ describe('BondFactory contract', () => {
     })
 
     let admin: SignerWithAddress
-    let treasury: string
     let nonAdmin: SignerWithAddress
-    let bonds: Box
+    let box: Box
     let upgradedListener: EventListener<UpgradedEventArgs>
 })
