@@ -277,7 +277,7 @@
           {
             "contract": "BoxWithStruct",
             "label": "_consumption",
-            "type": "t_struct(CookiesEaten)1708_storage",
+            "type": "t_struct(CookiesEaten)1719_storage",
             "src": "contracts/test/upgradable/BoxWithStruct.sol:16"
           }
         ],
@@ -285,7 +285,7 @@
           "t_string_storage": {
             "label": "string"
           },
-          "t_struct(CookiesEaten)1708_storage": {
+          "t_struct(CookiesEaten)1719_storage": {
             "label": "struct BoxWithStruct.CookiesEaten",
             "members": [
               {
