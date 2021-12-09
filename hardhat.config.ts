@@ -1,6 +1,7 @@
 import {task} from 'hardhat/config'
 import '@typechain/hardhat'
 import '@nomiclabs/hardhat-ethers'
+import '@openzeppelin/hardhat-upgrades'
 import '@nomiclabs/hardhat-waffle'
 import {log} from './config/logging'
 
