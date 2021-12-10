@@ -18,10 +18,10 @@ pip3 install slither-analyzer
 
 #### Run
 
-When at the project root, to run and exclude `BitDao.sol`, anything containing the path `contracts\treasury` or `node_modules`:
+When at the project root, to run using the project configuration:
 
 ```shell
-slither . --filter-paths "BitDAO.sol|contracts/treasury|node_modules"
+slither . --config-file slither.json
 ```
 
 ### Docker
@@ -50,7 +50,7 @@ Navigate into the `test-me` directory and run the static analysis:
 
 ```shell
 cd test-me
-slither . --filter-paths "BitDAO.sol|contracts/treasury|node_modules"
+--config-file slither.json
 ```
 
 ## Excluded Detectors
