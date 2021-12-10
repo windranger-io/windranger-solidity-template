@@ -130,4 +130,4 @@ jobs:
         run: pip3 install slither-analyzer
 
       - name: Slither Static Analysis
-        run: slither . --filter-paths "node_modules" --exclude solc-version,naming-convention
+        run: slither . --config-file slither.json
