@@ -121,9 +121,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
-        run: npm run build
-
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
