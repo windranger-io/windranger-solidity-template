@@ -4,7 +4,7 @@
   "exclude_low": false,
   "exclude_medium": false,
   "exclude_high": false,
-  "disable_color": true,
+  "disable_color": false,
   "filter_paths": "node_modules",
   "legacy_ast": false
 }
