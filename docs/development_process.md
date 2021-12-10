@@ -46,6 +46,10 @@ https://google.github.io/styleguide/tsguide.html
 Follow the Soldity docs guide.
 https://docs.soliditylang.org/en/v0.8.7/style-guide.html
 
+### Solidity static analysis
+
+- [Slither](slither.md)
+
 ---
 
 ## Open Communication
