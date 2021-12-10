@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract Tub is Ownable {
     string private _value;
+    string private _valueToo;
 
     event Store(string value);
 
