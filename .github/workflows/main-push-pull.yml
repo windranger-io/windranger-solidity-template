@@ -113,7 +113,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Slither Static Analysis
-        uses: luisfontes19/slither-static-analysis-action@v0.3.4
+      - name: Set up node
+        uses: actions/setup-node@v2.5.0
         with:
-          slither-params: '--filter-paths "contracts/test|contracts/treasury|node_modules" --exclude solc-version'
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+
+      - name: Install Slither
+        run: pip3 install slither-analyzer
+
+      - name: Slither Static Analysis
+        run: slither . --filter-paths "node_modules" --exclude solc-version
