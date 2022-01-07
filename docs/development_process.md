@@ -34,7 +34,7 @@ https://www.conventionalcommits.org/en/v1.0.0/
 
 When Pull Requests (PRs) are used to merge code from a branch, they undergo review (seeking approval), where input from the reviewers will be received by the requester.
 
-To more effectively communicate their point, when raising a comment the reviewer structures their comment following [conventional commits](https://conventionalcomments.org/).
+To more effectively communicate their point, when raising a comment the reviewer structures their comment following [conventional comments](https://conventionalcomments.org/).
 
 ### TypeScript Style Guide
 
