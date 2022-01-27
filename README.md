@@ -1,6 +1,6 @@
 # Solidity Project Template
 
-Providing a project with a template for the files, folder structure, dependencies, scripting, configuration (local & remote) and development standards used in a WindRanger Soldity project with TypeScript tests.
+Providing a project with a template for the files, folder structure, dependencies, scripting, configuration (local & remote) and development standards used in a Windranger Soldity project with TypeScript tests.
 
 ---
 
