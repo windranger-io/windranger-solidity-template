@@ -17,3 +17,6 @@ coverage
 
 # JS file output directory
 dist
+
+# Underdevelopment - ignore for now
+/contracts/treasury

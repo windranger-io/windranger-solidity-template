@@ -1,5 +1,5 @@
 import {Event} from 'ethers'
-import {StoreEvent} from '../../typechain/Box'
+import {StoreEvent} from '../../typechain-types/Box'
 import {expect} from 'chai'
 
 /**

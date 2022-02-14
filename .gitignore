@@ -3,7 +3,7 @@ artifacts
 cache
 
 # TypeChain
-typechain
+typechain-types
 
 # Logs
 logs
@@ -80,5 +80,15 @@ doc/
 # Jetbrains IDE
 .idea
 
+# Docker created bash file
+.bash_history
+
+# MacOS system files
+.DS_Store
+
 # OZ Cache (UUPS proxy deployment addresses)
 .openzeppelin
+
+# Yarn lock file (npm.lock covers this)
+yarn.lock
+yarn-error.log
