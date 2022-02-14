@@ -31,7 +31,7 @@ import {
     BoxWithInitialValueField,
     BoxWithSelfDestruct,
     BoxWithStruct
-} from '../typechain'
+} from '../typechain-types'
 
 // Wires Chai with Waffle and Promises
 chai.use(solidity)
