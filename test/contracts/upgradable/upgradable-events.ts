@@ -11,14 +11,19 @@ import {expect} from 'chai'
 /**
  * Payload (parameters) for the UpgradedEvent.
  */
-export interface UpgradedEventArgs {
+export type ActualUpgradedEvent = {
     implementation: string
+}
+
+export type ActualAdminChangedEvent = {
+    previousAdmin: string
+    newAdmin: string
 }
 
 /**
  * Shape check and conversion for a Admin Proxy's UpgradedEvent.
  */
-export function upgradedEvent(event: Event): UpgradedEventArgs {
+export function upgradedEvent(event: Event): ActualUpgradedEvent {
     const upgrade = event as UpgradedEvent
     expect(upgrade.args).is.not.undefined
 
@@ -31,10 +36,7 @@ export function upgradedEvent(event: Event): UpgradedEventArgs {
 /**
  * Shape check and conversion for a Admin Proxy's UpgradedEvent.
  */
-export function adminChangedEvent(event: Event): {
-    previousAdmin: string
-    newAdmin: string
-} {
+export function adminChangedEvent(event: Event): ActualAdminChangedEvent {
     const admin = event as AdminChangedEvent
     expect(admin.args).is.not.undefined
 

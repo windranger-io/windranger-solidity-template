@@ -15,7 +15,7 @@ import {
 } from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {
-    UpgradedEventArgs,
+    ActualUpgradedEvent,
     upgradedEvent
 } from './contracts/upgradable/upgradable-events'
 import {occurrenceAtMost} from './framework/time'
@@ -47,7 +47,7 @@ describe('BondFactory contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy<Box>('Box')
-        upgradedListener = new EventListener<UpgradedEventArgs>(
+        upgradedListener = new EventListener<ActualUpgradedEvent>(
             box,
             'Upgraded',
             (event) => upgradedEvent(event)
@@ -158,5 +158,5 @@ describe('BondFactory contract', () => {
     let admin: SignerWithAddress
     let nonAdmin: SignerWithAddress
     let box: Box
-    let upgradedListener: EventListener<UpgradedEventArgs>
+    let upgradedListener: EventListener<ActualUpgradedEvent>
 })
