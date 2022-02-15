@@ -1,4 +1,5 @@
 # Ignore artifacts:
+.github
 .husky
 .openzeppelin
 .eslintrc
