@@ -1,4 +1,12 @@
 # Ignore artifacts:
-node_modules
+.github
+.husky
+.openzeppelin
+.eslintrc
+artifacts
+cache
 dist
-typechain
+docs
+node_modules
+test/contracts/cast
+typechain-types
