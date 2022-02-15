@@ -39,7 +39,7 @@ chai.use(chaiAsPromised)
 
 const MAXIMUM_WAIT_MS = 5000
 
-describe('BondFactory contract', () => {
+describe('Box Upgrade contract', () => {
     before(async () => {
         admin = await signer(0)
         nonAdmin = await signer(2)
