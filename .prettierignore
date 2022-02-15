@@ -10,4 +10,3 @@ docs
 node_modules
 test/contracts/cast
 typechain-types
-.github
