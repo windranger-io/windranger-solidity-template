@@ -1,6 +1,8 @@
+[![Coverage Status](https://coveralls.io/repos/github/windranger-io/windranger-solidity-template/badge.svg?branch=master)](https://coveralls.io/github/windranger-io/windranger-solidity-template?branch=master)
+
 # Solidity Project Template
 
-Providing a project with a template for the files, folder structure, dependencies, scripting, configuration (local & remote) and development standards used in a Windranger Soldity project with TypeScript tests.
+Providing a project with a template for the files, folder structure, dependencies, scripting, configuration (local & remote) and development standards used in a windranger-io Soldity project with TypeScript tests.
 
 ---
 
