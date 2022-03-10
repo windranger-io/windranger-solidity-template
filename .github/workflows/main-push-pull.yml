@@ -135,6 +135,7 @@ jobs:
   Coveralls-Coverage:
     runs-on: ubuntu-latest
     name: Solidity Test Coverage
+    needs: Unit-Tests
     steps:
       - name: Checkout
         uses: actions/checkout@v3
