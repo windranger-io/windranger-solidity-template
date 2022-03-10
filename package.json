@@ -25,7 +25,7 @@
     "plant": "npx node-plantuml ./docs/specs",
     "prepare": "husky install",
     "test": "mocha --timeout 10000 --exit --recursive --require ts-node/register \"test/**/*.test.ts\"",
-    "coverage": "hardhat coverage"
+    "coverage": "TS_NODE_TRANSPILE_ONLY=true hardhat coverage"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.5",
