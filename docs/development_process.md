@@ -48,7 +48,7 @@ https://docs.soliditylang.org/en/v0.8.7/style-guide.html
 
 ### Solidity static analysis
 
-- [Slither](slither.md)
+- [Slither](tools/slither.md)
 
 ---
 
