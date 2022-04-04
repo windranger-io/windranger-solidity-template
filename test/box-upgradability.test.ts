@@ -56,6 +56,7 @@ describe('Box Upgrade contract', () => {
 
     describe('upgrade', () => {
         it('extension contract', async () => {
+            const beforeImplementationAddress = await box.implementation()
             const beforeUpgradeAddress = box.address
 
             const upgradedBonds = await upgradeContract<BoxExtension>(
@@ -69,14 +70,15 @@ describe('Box Upgrade contract', () => {
             )
 
             const upgradeEvents = upgradedListener.events()
-            expect(upgradeEvents.length).equals(2)
+            expect(upgradeEvents.length).equals(1)
             expect(upgradedBonds.address).equals(beforeUpgradeAddress)
+            expect(await box.implementation()).does.not.equal(
+                beforeImplementationAddress
+            )
             expect(ethers.utils.isAddress(upgradeEvents[0].implementation)).is
                 .true
-            expect(ethers.utils.isAddress(upgradeEvents[1].implementation)).is
-                .true
-            expect(upgradeEvents[0].implementation).does.not.equal(
-                upgradeEvents[1].implementation
+            expect(upgradeEvents[0].implementation).equals(
+                await box.implementation()
             )
         })
 
