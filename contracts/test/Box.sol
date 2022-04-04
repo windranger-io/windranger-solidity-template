@@ -30,6 +30,13 @@ contract Box is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     /**
+     * @notice Address of the contract used for logic implementation.
+     */
+    function implementation() external view returns (address) {
+        return _getImplementation();
+    }
+
+    /**
      * @notice retrieves the stored value.
      *
      * @dev the Box stores only a single value.
