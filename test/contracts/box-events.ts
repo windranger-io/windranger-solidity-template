@@ -1,6 +1,6 @@
 import {Event} from 'ethers'
-import {StoreEvent} from '../../typechain-types/Box'
 import {expect} from 'chai'
+import {StoreEvent} from '../../typechain-types/contracts/test/Box'
 
 export type ActualStoreEvent = {value: string}
 
