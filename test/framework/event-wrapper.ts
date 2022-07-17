@@ -10,12 +10,12 @@ import {
 import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
 import {EventListener} from './event-listener'
 
-function eventsArg(
+function findEventArgs(
     name: string,
     receipt: ContractReceipt,
     emitter?: Contract
-): unknown[] {
-    const found: unknown[] = []
+): utils.Result[] {
+    const found: utils.Result[] = []
 
     // eslint-disable-next-line no-undefined
     if (emitter === undefined) {
@@ -61,57 +61,30 @@ export type ContractReceiptSource =
     | ContractTransaction
     | Promise<ContractTransaction>
 
-export interface EventFactory<TArgObj = unknown> {
-    one<Result = TArgObj>(
+export interface EventFactory<T = unknown> {
+    one(receipt: ContractReceipt, expected?: T): T
+
+    all<Result = T[]>(
         receipt: ContractReceipt,
-        fn?: (args: TArgObj) => Result
+        fn?: (args: T[]) => Result
     ): Result
-    many<Result = TArgObj>(
-        receipt: ContractReceipt,
-        fn?: (args: TArgObj) => Result
-    ): Result[]
 
-    waitOne<Result = TArgObj>(
+    waitAll(
         source: ContractReceiptSource,
-        fn?: (args: TArgObj) => Result
-    ): Promise<Result>
-    waitMany<Result = TArgObj>(
-        source: ContractReceiptSource,
-        fn?: (args: TArgObj) => Result
-    ): Promise<Result[]>
-
-    waitOneWithReceipt<Result = TArgObj>(
-        source: ContractReceiptSource,
-        fn?: (args: TArgObj) => Result
-    ): Promise<{result: Result; receipt: ContractReceipt}>
-
-    waitManyWithReceipt<Result = TArgObj>(
-        source: ContractReceiptSource,
-        fn?: (args: TArgObj) => Result
-    ): Promise<{result: Result[]; receipt: ContractReceipt}>
-
-    chainOne(
-        source: ContractReceiptSource,
-        fn: (args: TArgObj) => void
-    ): Promise<ContractReceipt>
-    chainMany(
-        source: ContractReceiptSource,
-        fn: (args: TArgObj) => void
+        fn?: (args: T[]) => void
     ): Promise<ContractReceipt>
 
     toString(): string
     name(): string | undefined
 }
 
-export interface AttacheableEventFactory<TArgObj = unknown>
-    extends EventFactory<TArgObj> {
-    from(c: Contract): AttachedEventFactory<TArgObj>
+export interface AttacheableEventFactory<T> extends EventFactory<T> {
+    from(c: Contract): AttachedEventFactory<T>
 }
 
-export interface AttachedEventFactory<TArgObj = unknown>
-    extends AttacheableEventFactory<TArgObj> {
-    verify(event: Event): TArgObj
-    newListener(): EventListener<TArgObj>
+export interface AttachedEventFactory<T> extends AttacheableEventFactory<T> {
+    //    verify(event: Event, expected?: T): T
+    newListener(): EventListener<T>
 }
 
 async function receiptOf(av: ContractReceiptSource): Promise<ContractReceipt> {
@@ -122,99 +95,45 @@ async function receiptOf(av: ContractReceiptSource): Promise<ContractReceipt> {
 const nameByFactory = new Map<EventFactory, string>()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _wrap = <TArgObj, E extends TypedEvent<any, TArgObj>>(
+const _wrap = <T, E extends TypedEvent<any, T>>(
     template: E, // only for type
     customName?: string,
     emitter?: Contract
-): AttachedEventFactory<TArgObj> =>
-    new (class implements EventFactory<TArgObj> {
-        one<Result = TArgObj>(
+): AttachedEventFactory<T> =>
+    new (class implements AttachedEventFactory<T> {
+        one(receipt: ContractReceipt, expected?: T): T {
+            const args = findEventArgs(this.toString(), receipt, emitter)
+
+            expect(
+                args.length,
+                `Expecting a single event ${this.toString()}`
+            ).equals(1)
+            return this.verifyArgs(args[0], expected)
+        }
+
+        all<Result = T[]>(
             receipt: ContractReceipt,
-            fn?: (args: TArgObj) => Result
+            fn?: (args: T[]) => Result
         ): Result {
-            const args = eventsArg(
-                this.toString(),
-                receipt,
-                emitter
-            ) as TArgObj[]
-            expect(args.length, 'Only one event expected').equals(1)
-
-            const arg = args[0]
+            const args = findEventArgs(this.toString(), receipt, emitter)
 
             // eslint-disable-next-line no-undefined
             if (fn === undefined) {
-                return arg as unknown as Result
-            }
-            return fn(arg)
-        }
-
-        many<Result = TArgObj>(
-            receipt: ContractReceipt,
-            fn?: (args: TArgObj) => Result
-        ): Result[] {
-            const args = eventsArg(
-                this.toString(),
-                receipt,
-                emitter
-            ) as TArgObj[]
-
-            // eslint-disable-next-line no-undefined
-            if (fn === undefined) {
-                return args as unknown[] as Result[]
+                args.forEach((arg): void => {
+                    this.verifyArgs(arg)
+                })
+                return args as unknown as Result
             }
 
-            const result: Result[] = []
-            args.forEach((v) => result.push(fn(v)))
-            return result
+            return fn(args as unknown as T[])
         }
 
-        async waitOne<Result = TArgObj>(
+        async waitAll(
             source: ContractReceiptSource,
-            fn?: (args: TArgObj) => Result
-        ): Promise<Result> {
-            const receipt = await receiptOf(source)
-            return this.one(receipt, fn)
-        }
-
-        async waitMany<Result = TArgObj>(
-            source: ContractReceiptSource,
-            fn?: (args: TArgObj) => Result
-        ): Promise<Result[]> {
-            const receipt = await receiptOf(source)
-            return this.many(receipt, fn)
-        }
-
-        async waitOneWithReceipt<Result = TArgObj>(
-            source: ContractReceiptSource,
-            fn?: (args: TArgObj) => Result
-        ): Promise<{result: Result; receipt: ContractReceipt}> {
-            const receipt = await receiptOf(source)
-            return {result: this.one(receipt, fn), receipt} as const
-        }
-
-        async waitManyWithReceipt<Result = TArgObj>(
-            source: ContractReceiptSource,
-            fn?: (args: TArgObj) => Result
-        ): Promise<{result: Result[]; receipt: ContractReceipt}> {
-            const receipt = await receiptOf(source)
-            return {result: this.many(receipt, fn), receipt} as const
-        }
-
-        async chainOne(
-            source: ContractReceiptSource,
-            fn: (args: TArgObj) => void
+            fn?: (args: T[]) => void
         ): Promise<ContractReceipt> {
             const receipt = await receiptOf(source)
-            this.one(receipt, fn)
-            return receipt
-        }
-
-        async chainMany(
-            source: ContractReceiptSource,
-            fn: (args: TArgObj) => void
-        ): Promise<ContractReceipt> {
-            const receipt = await receiptOf(source)
-            this.many(receipt, fn)
+            this.all(receipt, fn)
             return receipt
         }
 
@@ -226,7 +145,7 @@ const _wrap = <TArgObj, E extends TypedEvent<any, TArgObj>>(
             return customName ?? nameByFactory.get(this)
         }
 
-        from(c: Contract): AttachedEventFactory<TArgObj> {
+        from(c: Contract): AttachedEventFactory<T> {
             const fragment = c.interface.getEvent(this.toString())
 
             if (!fragment || fragment.anonymous) {
@@ -238,17 +157,24 @@ const _wrap = <TArgObj, E extends TypedEvent<any, TArgObj>>(
             return _wrap(template, this.toString(), c)
         }
 
-        verify(event: Event): TArgObj {
-            expect(event.event).eq(this.toString())
+        verify(event: Event, expected?: Partial<T>): T {
             expect(event.args).is.not.undefined
+            expect(event.event).eq(this.toString())
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return this.verifyArgs(event.args!, expected)
+        }
 
+        verifyArgs(args: utils.Result, expected?: Partial<T>): T {
             // eslint-disable-next-line no-undefined
-            if (emitter === undefined) {
-                const typedEvent = event as E
-                const args = typedEvent.args as TArgObj
+            if (expected !== undefined) {
+                _verifyByProperties(expected, this.toString(), args)
 
+                // eslint-disable-next-line no-undefined
+            } else if (emitter === undefined) {
                 // this is not very good, but we dont have a real template
-                for (const [propName, propValue] of Object.entries(args)) {
+                for (const [propName, propValue] of Object.entries(
+                    args as unknown as T
+                )) {
                     expect(
                         propValue,
                         `${this.toString()}.${propName} is undefined`
@@ -256,44 +182,49 @@ const _wrap = <TArgObj, E extends TypedEvent<any, TArgObj>>(
                 }
             } else {
                 const n = this.toString()
-                _verifyEventFragmentArgsObj(
-                    emitter.interface.getEvent(n),
-                    n,
-                    event
-                )
+                _verifyByFragment(emitter.interface.getEvent(n), n, args)
             }
-            return event as unknown as TArgObj
+            return args as unknown as T
         }
 
-        newListener(): EventListener<TArgObj> {
+        newListener(): EventListener<T> {
             const n = this.toString()
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const fragment = emitter!.interface.getEvent(n)
+            const em = emitter!
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return new EventListener<TArgObj>(emitter!, n, (event) => {
-                _verifyEventFragmentArgsObj(fragment, n, event)
-                return event.args as unknown as TArgObj
+            const fragment = em.interface.getEvent(n)
+            return new EventListener<T>(em, n, (event) => {
+                const args = event.args ?? ({} as utils.Result)
+                _verifyByFragment(fragment, n, args)
+                return args as unknown as T
             })
         }
     })()
 
-const _verifyEventFragmentArgsObj = (
+const _verifyByFragment = (
     fragment: utils.EventFragment,
     name: string,
-    event: Event
+    args: utils.Result
 ) => {
-    const args = event.args ?? []
-
     fragment.inputs.forEach((param) => {
         const propName = param.name
-        expect(args[propName], `${name}.${propName} is undefined`).is.not
-            .undefined
+        expect(args[propName], `Property ${name}.${propName} is undefined`).is
+            .not.undefined
     })
 }
 
-export const addNamedEvent = (f: EventFactory, name: string): void => {
-    nameByFactory.set(f, name)
+const _verifyByProperties = <T>(
+    expected: T,
+    name: string,
+    args: utils.Result
+) => {
+    Object.entries(expected).forEach((param) => {
+        const propName = param[0]
+        expect(
+            args[propName],
+            `Mismatched value of property ${name}.${propName}`
+        ).eq(param[1])
+    })
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -306,12 +237,14 @@ class ContractEventFilters<F extends EventFilters> extends Contract {
 type EventFilterType<T extends TypedEventFilter<TypedEvent>> =
     T extends TypedEventFilter<infer R extends TypedEvent> ? R : never
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type EventObjectType<T extends TypedEvent> = T extends TypedEvent<any, infer R>
+type EventObjectType<T extends TypedEvent> = T extends TypedEvent<
+    unknown[],
+    infer R
+>
     ? R
     : never
 
-export const wrapContractEvent = <
+export const eventOf = <
     F extends EventFilters,
     N extends keyof F & string,
     E extends EventFilterType<ReturnType<F[N]>>
@@ -322,8 +255,20 @@ export const wrapContractEvent = <
     // eslint-disable-next-line no-undefined
     _wrap(null as unknown as E, name, emitter === null ? undefined : emitter)
 
-export const wrapTypedEvent = <TArgObj>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    template: TypedEvent<any, TArgObj>, // only for type
+export const newEventListener = <
+    F extends EventFilters,
+    N extends keyof F & string,
+    E extends EventFilterType<ReturnType<F[N]>>
+>(
+    emitter: ContractEventFilters<F>,
+    name: N
+): EventListener<EventObjectType<E>> => eventOf(emitter, name).newListener()
+
+export const eventTemplate = <T>(
+    template: TypedEvent<unknown[], T>, // only as type, not as value
     customName?: string
-): AttacheableEventFactory<TArgObj> => _wrap(template, customName)
+): AttacheableEventFactory<T> => _wrap(template, customName)
+
+export const addNamedEventTemplate = (f: EventFactory, name: string): void => {
+    nameByFactory.set(f, name)
+}

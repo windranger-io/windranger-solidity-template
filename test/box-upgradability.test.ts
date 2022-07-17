@@ -28,7 +28,7 @@ import {
     BoxWithSelfDestruct,
     BoxWithStruct
 } from '../typechain-types'
-import {wrapContractEvent} from './framework/event-wrapper'
+import {newEventListener} from './framework/event-wrapper'
 import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
 
 // Wires Chai with Waffle and Promises
@@ -45,7 +45,8 @@ describe('Box Upgrade contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy<Box>('Box')
-        upgradedListener = wrapContractEvent(box, 'Upgraded').newListener()
+        // upgradedListener = eventOf(box, 'Upgraded').newListener()
+        upgradedListener = newEventListener(box, 'Upgraded')
     })
 
     describe('upgrade', () => {

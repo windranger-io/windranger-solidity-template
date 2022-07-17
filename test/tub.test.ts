@@ -10,7 +10,7 @@ import {Tub} from '../typechain-types'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {successfulTransaction} from './framework/transaction'
-import {verifyStoreEvent} from './contracts/verify-box-events'
+import {eventOf} from './framework/event-wrapper'
 
 // Wires up Waffle with Chai
 chai.use(solidity)
@@ -48,7 +48,8 @@ describe('Tub', () => {
 
             const receipt = await successfulTransaction(tub.store(value))
 
-            verifyStoreEvent(receipt, {value: value})
+            eventOf(tub, 'Store').one(receipt, {value})
+
             expect(await tub.value()).equals(value)
         })
 
@@ -70,7 +71,9 @@ describe('Tub', () => {
             tub.connect(admin).store(valueOne)
         )
 
-        verifyStoreEvent(receiptOne, {value: valueOne})
+        const storeEvent = eventOf(tub, 'Store')
+
+        storeEvent.one(receiptOne, {value: valueOne})
         expect(await tub.connect(observer).value()).equals(valueOne)
 
         // Overwriting the stored value
@@ -80,7 +83,7 @@ describe('Tub', () => {
             tub.connect(admin).store(valueTwo)
         )
 
-        verifyStoreEvent(receiptTwo, {value: valueTwo})
+        storeEvent.one(receiptTwo, {value: valueTwo})
         expect(await tub.connect(observer).value()).equals(valueTwo)
     })
 
