@@ -13,37 +13,24 @@ import {EventListener} from './event-listener'
 function findEventArgs(
     name: string,
     receipt: ContractReceipt,
-    emitter?: Contract
+    emitter: Contract
 ): utils.Result[] {
     const found: utils.Result[] = []
 
-    // eslint-disable-next-line no-undefined
-    if (emitter === undefined) {
-        for (const entry of receipt.events ?? []) {
-            if (entry?.event === name) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                found.push(entry.args!)
-            }
-        }
-    } else {
-        const addr = emitter.address.toUpperCase()
-        const parser = emitter.interface
+    const addr = emitter.address.toUpperCase()
+    const parser = emitter.interface
 
-        const fragment = parser.getEvent(name)
-        const id = utils.id(fragment.format())
+    const fragment = parser.getEvent(name)
+    const id = utils.id(fragment.format())
 
-        for (const entry of receipt.logs) {
-            if (
-                entry.topics[0] === id &&
-                entry.address.toUpperCase() === addr
-            ) {
-                const parsed = parser.decodeEventLog(
-                    fragment,
-                    entry.data,
-                    entry.topics
-                )
-                found.push(parsed)
-            }
+    for (const entry of receipt.logs) {
+        if (entry.topics[0] === id && entry.address.toUpperCase() === addr) {
+            const parsed = parser.decodeEventLog(
+                fragment,
+                entry.data,
+                entry.topics
+            )
+            found.push(parsed)
         }
     }
 
@@ -62,7 +49,7 @@ export type ContractReceiptSource =
     | Promise<ContractTransaction>
 
 export interface EventFactory<T = unknown> {
-    one(receipt: ContractReceipt, expected?: T): T
+    expectOne(receipt: ContractReceipt, expected?: T): T
 
     all<Result = T[]>(
         receipt: ContractReceipt,
@@ -75,7 +62,7 @@ export interface EventFactory<T = unknown> {
     ): Promise<ContractReceipt>
 
     toString(): string
-    name(): string | undefined
+    name(): string
 }
 
 export interface AttacheableEventFactory<T> extends EventFactory<T> {
@@ -89,19 +76,24 @@ export interface AttachedEventFactory<T> extends AttacheableEventFactory<T> {
 
 async function receiptOf(av: ContractReceiptSource): Promise<ContractReceipt> {
     const v = await av
-    return 'gasUsed' in v ? v : v.wait(1)
-}
+    const receipt = 'gasUsed' in v ? v : await v.wait(1)
 
-const nameByFactory = new Map<EventFactory, string>()
+    // Transaction status code https://eips.ethereum.org/EIPS/eip-1066
+    const SUCCESS = 1
+
+    expect(receipt).is.not.undefined
+    expect(receipt.status).equals(SUCCESS)
+    return receipt
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _wrap = <T, E extends TypedEvent<any, T>>(
     template: E, // only for type
-    customName?: string,
-    emitter?: Contract
+    customName: string,
+    emitter: Contract
 ): AttachedEventFactory<T> =>
     new (class implements AttachedEventFactory<T> {
-        one(receipt: ContractReceipt, expected?: T): T {
+        expectOne(receipt: ContractReceipt, expected?: T): T {
             const args = findEventArgs(this.toString(), receipt, emitter)
 
             expect(
@@ -138,11 +130,11 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
         }
 
         toString(): string {
-            return this.name() ?? '<unknown>'
+            return this.name()
         }
 
-        name(): string | undefined {
-            return customName ?? nameByFactory.get(this)
+        name(): string {
+            return customName
         }
 
         from(c: Contract): AttachedEventFactory<T> {
@@ -165,35 +157,21 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
         }
 
         verifyArgs(args: utils.Result, expected?: Partial<T>): T {
+            const n = this.toString()
             // eslint-disable-next-line no-undefined
-            if (expected !== undefined) {
-                _verifyByProperties(expected, this.toString(), args)
-
-                // eslint-disable-next-line no-undefined
-            } else if (emitter === undefined) {
-                // this is not very good, but we dont have a real template
-                for (const [propName, propValue] of Object.entries(
-                    args as unknown as T
-                )) {
-                    expect(
-                        propValue,
-                        `${this.toString()}.${propName} is undefined`
-                    ).is.not.undefined
-                }
-            } else {
-                const n = this.toString()
+            if (expected === undefined) {
                 _verifyByFragment(emitter.interface.getEvent(n), n, args)
+            } else {
+                _verifyByProperties(expected, n, args)
             }
             return args as unknown as T
         }
 
         newListener(): EventListener<T> {
             const n = this.toString()
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const em = emitter!
 
-            const fragment = em.interface.getEvent(n)
-            return new EventListener<T>(em, n, (event) => {
+            const fragment = emitter.interface.getEvent(n)
+            return new EventListener<T>(emitter, n, (event) => {
                 const args = event.args ?? ({} as utils.Result)
                 _verifyByFragment(fragment, n, args)
                 return args as unknown as T
@@ -252,8 +230,7 @@ export const eventOf = <
     emitter: ContractEventFilters<F>,
     name: N
 ): AttachedEventFactory<EventObjectType<E>> =>
-    // eslint-disable-next-line no-undefined
-    _wrap(null as unknown as E, name, emitter === null ? undefined : emitter)
+    _wrap(null as unknown as E, name, emitter)
 
 export const newEventListener = <
     F extends EventFilters,
@@ -263,12 +240,3 @@ export const newEventListener = <
     emitter: ContractEventFilters<F>,
     name: N
 ): EventListener<EventObjectType<E>> => eventOf(emitter, name).newListener()
-
-export const eventTemplate = <T>(
-    template: TypedEvent<unknown[], T>, // only as type, not as value
-    customName?: string
-): AttacheableEventFactory<T> => _wrap(template, customName)
-
-export const addNamedEventTemplate = (f: EventFactory, name: string): void => {
-    nameByFactory.set(f, name)
-}

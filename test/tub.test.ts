@@ -48,7 +48,7 @@ describe('Tub', () => {
 
             const receipt = await successfulTransaction(tub.store(value))
 
-            eventOf(tub, 'Store').one(receipt, {value})
+            eventOf(tub, 'Store').expectOne(receipt, {value})
 
             expect(await tub.value()).equals(value)
         })
@@ -73,7 +73,7 @@ describe('Tub', () => {
 
         const storeEvent = eventOf(tub, 'Store')
 
-        storeEvent.one(receiptOne, {value: valueOne})
+        storeEvent.expectOne(receiptOne, {value: valueOne})
         expect(await tub.connect(observer).value()).equals(valueOne)
 
         // Overwriting the stored value
@@ -83,7 +83,7 @@ describe('Tub', () => {
             tub.connect(admin).store(valueTwo)
         )
 
-        storeEvent.one(receiptTwo, {value: valueTwo})
+        storeEvent.expectOne(receiptTwo, {value: valueTwo})
         expect(await tub.connect(observer).value()).equals(valueTwo)
     })
 

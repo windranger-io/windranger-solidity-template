@@ -49,7 +49,7 @@ describe('Box', () => {
 
             const receipt = await successfulTransaction(box.store(value))
 
-            eventOf(box, 'Store').one(receipt, {value})
+            eventOf(box, 'Store').expectOne(receipt, {value})
 
             expect(await box.value()).equals(value)
         })
@@ -74,7 +74,7 @@ describe('Box', () => {
 
         const eventStore = eventOf(box, 'Store')
 
-        eventStore.one(receiptOne, {value: valueOne})
+        eventStore.expectOne(receiptOne, {value: valueOne})
         expect(await box.connect(observer).value()).equals(valueOne)
 
         // Overwriting the stored value
@@ -84,7 +84,7 @@ describe('Box', () => {
             box.connect(admin).store(valueTwo)
         )
 
-        eventStore.one(receiptTwo, {value: valueTwo})
+        eventStore.expectOne(receiptTwo, {value: valueTwo})
         expect(await box.connect(observer).value()).equals(valueTwo)
     })
 
