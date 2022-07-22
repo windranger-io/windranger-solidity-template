@@ -10,7 +10,7 @@ import {Box} from '../typechain-types'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {successfulTransaction} from './framework/transaction'
-import {verifyStoreEvent} from './contracts/verify-box-events'
+import {eventOf} from './framework/event-wrapper'
 
 // Wires up Waffle with Chai
 chai.use(solidity)
@@ -49,7 +49,8 @@ describe('Box', () => {
 
             const receipt = await successfulTransaction(box.store(value))
 
-            verifyStoreEvent(receipt, {value: value})
+            eventOf(box, 'Store').expectOne(receipt, {value})
+
             expect(await box.value()).equals(value)
         })
 
@@ -71,7 +72,9 @@ describe('Box', () => {
             box.connect(admin).store(valueOne)
         )
 
-        verifyStoreEvent(receiptOne, {value: valueOne})
+        const eventStore = eventOf(box, 'Store')
+
+        eventStore.expectOne(receiptOne, {value: valueOne})
         expect(await box.connect(observer).value()).equals(valueOne)
 
         // Overwriting the stored value
@@ -81,7 +84,7 @@ describe('Box', () => {
             box.connect(admin).store(valueTwo)
         )
 
-        verifyStoreEvent(receiptTwo, {value: valueTwo})
+        eventStore.expectOne(receiptTwo, {value: valueTwo})
         expect(await box.connect(observer).value()).equals(valueTwo)
     })
 
