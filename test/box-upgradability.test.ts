@@ -45,7 +45,6 @@ describe('Box Upgrade contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy<Box>('Box')
-        // upgradedListener = eventOf(box, 'Upgraded').newListener()
         upgradedListener = newEventListener(box, 'Upgraded')
     })
 
