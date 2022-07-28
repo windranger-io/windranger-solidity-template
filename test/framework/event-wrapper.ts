@@ -51,6 +51,8 @@ export type ContractReceiptSource =
 export interface EventFactory<T = unknown> {
     expectOne(receipt: ContractReceipt, expected?: T): T
 
+    expectOrdered(receipt: ContractReceipt, expecteds: Partial<T>[]): T[]
+
     all<Result = T[]>(
         receipt: ContractReceipt,
         fn?: (args: T[]) => Result
@@ -103,6 +105,36 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return this.verifyArgs(args[0], expected)
         }
 
+        expectOrdered(receipt: ContractReceipt, expecteds: Partial<T>[]): T[] {
+            const actuals = findEventArgs(this.toString(), receipt, emitter)
+            const result: T[] = []
+            const matched: boolean[] = new Array<boolean>(actuals.length)
+            let prevActualIndex = -1
+
+            for (let i = 0; i < expecteds.length; i++) {
+                for (let j = 0; j < actuals.length; j++) {
+                    if (!matched[j]) {
+                        const actual = actuals[j]
+                        if (this.matchArgs(actual, expecteds[i])) {
+                            expect(j, 'Wrong order of events').gt(
+                                prevActualIndex
+                            )
+                            prevActualIndex = j
+                            matched[j] = true
+                            result.push(actual as unknown as T)
+                            break
+                        }
+                    }
+                }
+            }
+
+            expect(result.length, 'Not all expected events were found').eq(
+                expecteds.length
+            )
+
+            return result
+        }
+
         all<Result = T[]>(
             receipt: ContractReceipt,
             fn?: (args: T[]) => Result
@@ -149,22 +181,27 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return _wrap(template, this.toString(), c)
         }
 
-        verify(event: Event, expected?: Partial<T>): T {
+        verify(event: Event, expected?: T): T {
             expect(event.args).is.not.undefined
             expect(event.event).eq(this.toString())
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.verifyArgs(event.args!, expected)
         }
 
-        verifyArgs(args: utils.Result, expected?: Partial<T>): T {
+        verifyArgs(args: utils.Result, expected?: T): T {
             const n = this.toString()
             // eslint-disable-next-line no-undefined
-            if (expected === undefined) {
-                _verifyByFragment(emitter.interface.getEvent(n), n, args)
-            } else {
+            if (expected !== undefined) {
                 _verifyByProperties(expected, n, args)
             }
+            _verifyByFragment(emitter.interface.getEvent(n), n, args)
             return args as unknown as T
+        }
+
+        matchArgs(args: utils.Result, expected: Partial<T>): boolean {
+            const n = this.toString()
+            _verifyByFragment(emitter.interface.getEvent(n), n, args)
+            return _matchByProperties(expected, args)
         }
 
         newListener(): EventListener<T> {
@@ -203,6 +240,20 @@ const _verifyByProperties = <T>(
             `Mismatched value of property ${name}.${propName}`
         ).eq(param[1])
     })
+}
+
+const _matchByProperties = <T>(
+    expected: Partial<T>,
+    args: utils.Result
+): boolean => {
+    Object.entries(expected).forEach((param) => {
+        const propName = param[0]
+        // eslint-disable-next-line no-undefined
+        if (param[1] !== undefined && args[propName] !== param[1]) {
+            return false
+        }
+    })
+    return true
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
