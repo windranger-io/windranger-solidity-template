@@ -14,6 +14,7 @@ contract Tub is Ownable {
     string private _value;
 
     event Store(string value);
+    event MultiStore(string indexed boxValue, address[] nested);
 
     /**
      * @notice Permits the owner to store a value.
@@ -26,6 +27,29 @@ contract Tub is Ownable {
         _value = boxValue;
 
         emit Store(_value);
+    }
+
+    function multiStore(string[] calldata boxValues) external {
+        for (uint256 i = 0; i < boxValues.length; i++) {
+            _value = boxValues[i];
+            emit Store(_value);
+        }
+    }
+
+    function nestedStore(string calldata boxValue, address[] calldata nested)
+        external
+    {
+        _value = boxValue;
+
+        emit Store(_value);
+
+        if (nested.length > 0) {
+            emit MultiStore(boxValue, nested);
+            Tub(nested[0]).nestedStore(
+                string(abi.encodePacked("+", boxValue)),
+                nested[1:]
+            ); // string(abi.encodePacked("+", boxValue))
+        }
     }
 
     /**

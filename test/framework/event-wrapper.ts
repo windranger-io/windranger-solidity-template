@@ -8,6 +8,7 @@ import {
     utils
 } from 'ethers'
 import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
+import {ExtendedEventFilter, newExtendedEventFilter} from './event-filters'
 import {EventListener} from './event-listener'
 
 function findEventArgs(
@@ -51,7 +52,11 @@ export type ContractReceiptSource =
 export interface EventFactory<T = unknown> {
     expectOne(receipt: ContractReceipt, expected?: T): T
 
-    expectOrdered(receipt: ContractReceipt, expecteds: Partial<T>[]): T[]
+    expectOrdered(
+        receipt: ContractReceipt,
+        expecteds: Partial<T>[],
+        forwardOnly?: boolean
+    ): T[]
 
     all<Result = T[]>(
         receipt: ContractReceipt,
@@ -65,15 +70,12 @@ export interface EventFactory<T = unknown> {
 
     toString(): string
     name(): string
-}
 
-export interface AttacheableEventFactory<T> extends EventFactory<T> {
-    from(c: Contract): AttachedEventFactory<T>
-}
-
-export interface AttachedEventFactory<T> extends AttacheableEventFactory<T> {
-    //    verify(event: Event, expected?: T): T
     newListener(): EventListener<T>
+    newFilter(
+        args?: Partial<T>,
+        emitterAddress?: string | '*'
+    ): ExtendedEventFilter<T>
 }
 
 async function receiptOf(av: ContractReceiptSource): Promise<ContractReceipt> {
@@ -93,8 +95,8 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
     template: E, // only for type
     customName: string,
     emitter: Contract
-): AttachedEventFactory<T> =>
-    new (class implements AttachedEventFactory<T> {
+): EventFactory<T> =>
+    new (class implements EventFactory<T> {
         expectOne(receipt: ContractReceipt, expected?: T): T {
             const args = findEventArgs(this.toString(), receipt, emitter)
 
@@ -105,14 +107,22 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return this.verifyArgs(args[0], expected)
         }
 
-        expectOrdered(receipt: ContractReceipt, expecteds: Partial<T>[]): T[] {
+        expectOrdered(
+            receipt: ContractReceipt,
+            expecteds: Partial<T>[],
+            forwardOnly?: boolean
+        ): T[] {
             const actuals = findEventArgs(this.toString(), receipt, emitter)
             const result: T[] = []
             const matched: boolean[] = new Array<boolean>(actuals.length)
             let prevActualIndex = -1
 
             for (let i = 0; i < expecteds.length; i++) {
-                for (let j = 0; j < actuals.length; j++) {
+                for (
+                    let j = forwardOnly ? prevActualIndex + 1 : 0;
+                    j < actuals.length;
+                    j++
+                ) {
                     if (!matched[j]) {
                         const actual = actuals[j]
                         if (this.matchArgs(actual, expecteds[i])) {
@@ -169,18 +179,6 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return customName
         }
 
-        from(c: Contract): AttachedEventFactory<T> {
-            const fragment = c.interface.getEvent(this.toString())
-
-            if (!fragment || fragment.anonymous) {
-                throw new Error(
-                    `Event ${this.toString()} is unknown to the contract`
-                )
-            }
-
-            return _wrap(template, this.toString(), c)
-        }
-
         verify(event: Event, expected?: T): T {
             expect(event.args).is.not.undefined
             expect(event.event).eq(this.toString())
@@ -214,6 +212,19 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
                 return args as unknown as T
             })
         }
+
+        newFilter(
+            filter?: Partial<T>,
+            emitterAddress?: string
+        ): ExtendedEventFilter<T> {
+            const n = this.toString()
+            return newExtendedEventFilter<T>(
+                n,
+                emitterAddress ?? emitter.address,
+                emitter.interface,
+                filter ?? {}
+            )
+        }
     })()
 
 const _verifyByFragment = (
@@ -245,16 +256,12 @@ const _verifyByProperties = <T>(
 const _matchByProperties = <T>(
     expected: Partial<T>,
     args: utils.Result
-): boolean => {
-    Object.entries(expected).forEach((param) => {
-        const propName = param[0]
-        // eslint-disable-next-line no-undefined
-        if (param[1] !== undefined && args[propName] !== param[1]) {
-            return false
-        }
-    })
-    return true
-}
+): boolean =>
+    !Object.entries(expected).some(
+        (param): boolean =>
+            // eslint-disable-next-line no-undefined
+            param[1] !== undefined && args[param[0]] !== param[1]
+    )
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventFilters = {[name: string]: (...args: Array<any>) => EventFilter}
@@ -280,7 +287,7 @@ export const eventOf = <
 >(
     emitter: ContractEventFilters<F>,
     name: N
-): AttachedEventFactory<EventObjectType<E>> =>
+): EventFactory<EventObjectType<E>> =>
     _wrap(null as unknown as E, name, emitter)
 
 export const newEventListener = <
