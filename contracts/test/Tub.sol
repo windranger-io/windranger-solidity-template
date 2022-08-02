@@ -48,7 +48,7 @@ contract Tub is Ownable {
             Tub(nested[0]).nestedStore(
                 string(abi.encodePacked("+", boxValue)),
                 nested[1:]
-            ); // string(abi.encodePacked("+", boxValue))
+            );
         }
     }
 
