@@ -13,42 +13,55 @@ export interface ExtendedEventFilter<T = any>
     decodeEventData: DecodeFunc
 }
 
-/*
- * function decodeEventLogs(
- *     logs: Array<Log>,
- *     decoderLookup: (emitter: string, topic0: string) => (DecodeFunc | undefined)
- * ): utils.Result[] {
- *     const found: utils.Result[] = []
- *     for (const entry of logs) {
- *         const decodeFn = decoderLookup(entry.address.toUpperCase(), entry.topics[0])
- *         if (decodeFn !== undefined) {
- *             found.push(decodeFn(entry.data,entry.topics))
- *         }
- *     }
- *     return found
- * }
- */
+function decodeEventLogs(
+    logs: Array<Log>,
+    decoderLookup: (emitter: string, topic0: string) => DecodeFunc | undefined
+): utils.Result[] {
+    const found: utils.Result[] = []
+    for (const entry of logs) {
+        const decodeFn = decoderLookup(
+            entry.address.toUpperCase(),
+            entry.topics[0]
+        )
+        // eslint-disable-next-line no-undefined
+        if (decodeFn !== undefined) {
+            found.push(decodeFn(entry))
+        }
+    }
+    return found
+}
 
-/*
- * function filtersToDecoders(filters: Array<ExtendedEventFilter<any>>) : Map<string, Map<string, DecodeFunc>> {
- *     const result = new Map<string, Map<string, DecodeFunc>>();
- *     for (const filter of filters) {
- *         if (filter.address && filter.topics) {
- *             const eventType = filter.topics[0];
- *             if (typeof eventType === 'string') {
- *                 const addr = filter.address.toUpperCase()
- *                 let subMap = result.get(addr)
- *                 if (subMap === undefined) {
- *                     subMap = new Map<string, DecodeFunc>()
- *                     result.set(addr, subMap)
- *                 }
- *                 subMap.set(eventType, filter.decodeEventData)
- *             }
- *         }
- *     }
- *     return result;
- * }
- */
+function filtersToDecoders(
+    filters: Array<ExtendedEventFilter>
+): Map<string, Map<string, DecodeFunc>> {
+    const result = new Map<string, Map<string, DecodeFunc>>()
+    for (const filter of filters) {
+        if (filter.address && filter.topics) {
+            const eventType = filter.topics[0]
+            if (typeof eventType === 'string') {
+                const addr = filter.address.toUpperCase()
+                let subMap = result.get(addr)
+                // eslint-disable-next-line no-undefined
+                if (subMap === undefined) {
+                    subMap = new Map<string, DecodeFunc>()
+                    result.set(addr, subMap)
+                }
+                subMap.set(eventType, filter.decodeEventData)
+            }
+        }
+    }
+    return result
+}
+
+export function filterEventFromLog<T>(
+    logs: Array<Log>,
+    filter: ExtendedEventFilter<T>
+): T[] {
+    const decoders = filtersToDecoders([filter])
+    return decodeEventLogs(logs, (emitter, topic) =>
+        decoders.get(emitter)?.get(topic)
+    ) as unknown[] as T[]
+}
 
 type UnwrapEventFilter<T> = T extends ExtendedEventFilter<infer R> ? R : never
 
