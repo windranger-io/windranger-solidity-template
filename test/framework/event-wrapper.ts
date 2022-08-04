@@ -137,7 +137,7 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return customName
         }
 
-        verifyArgs(args: utils.Result, expected?: T): T {
+        private verifyArgs(args: utils.Result, expected?: T): T {
             const n = this.toString()
             // eslint-disable-next-line no-undefined
             if (expected !== undefined) {

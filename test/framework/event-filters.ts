@@ -5,10 +5,8 @@ import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
 
 type DecodeFunc = (log: Log) => utils.Result
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface ExtendedEventFilter<T = any>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extends TypedEventFilter<TypedEvent<any[], T>> {
+export interface ExtendedEventFilter<T = object>
+    extends TypedEventFilter<TypedEvent<unknown[], T>> {
     nonIndexed?: Record<string, unknown>
     decodeEventData: DecodeFunc
 }
@@ -53,6 +51,12 @@ function filtersToDecoders(
     return result
 }
 
+/**
+ * Parses logs for the specific event type
+ *
+ * @param logs to be parsed
+ * @param filter to pick and decode log entries
+ */
 export function filterEventFromLog<T>(
     logs: Array<Log>,
     filter: ExtendedEventFilter<T>
@@ -72,6 +76,24 @@ type UnwrapEventFilters<T extends [...ExtendedEventFilter[]]> = T extends [
     ? [UnwrapEventFilter<Head>, ...UnwrapEventFilters<Tail>]
     : []
 
+/**
+ * Parses logs of the receipt by the given filters.
+ * This function matches the provided sequence of filters agains logs.
+ * A matched log entry is removed from further matching.
+ *
+ * Throws an error when:
+ * - a filter N matches a log entry with lower index than a filter N-1
+ * - not all filters have a match
+ *
+ * NB! This function have a special handling for `indexed` event arguments
+ * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
+ * for filtering, but decded fields will not have values, but special
+ * Indexed objects with hash.
+ *
+ * @param receipt to provide logs for parsing
+ * @param filters a set of filters to match and parse log entries
+ * @return a set of parsed log entries matched by the filters
+ */
 export function expectEvents<T extends ExtendedEventFilter[]>(
     receipt: ContractReceipt,
     ...filters: T
@@ -80,6 +102,31 @@ export function expectEvents<T extends ExtendedEventFilter[]>(
     return result as UnwrapEventFilters<T>
 }
 
+/**
+ * Parses logs of the receipt by the given filters.
+ * This function matches the provided sequence of filters agains logs.
+ * This function also returns emmitters of the matched events, so it is
+ * usable with filters where an emitter is not specified.
+ *
+ * When forwardOnly is false only a matched log entry is removed from further matching;
+ * othterwise, all log entries before the matched entry are also excluded.
+ * Use forwardOnly = false for a distinct set of events to make sure that ordering is correct.
+ * Use forwardOnly = true to extract a few events of the same type when some of events are exact and some are not.
+ *
+ * NB! This function have a special handling for `indexed` event arguments
+ * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
+ * for filtering, but decded fields will not have values, but special
+ * Indexed objects with hash.
+ *
+ * Throws an error when:
+ * - a filter N matches a log entry with lower index than a filter N-1
+ * - not all filters have a match
+ *
+ * @param receipt to provide logs for parsing
+ * @param forwardOnly prevents backward logs matching when is true
+ * @param filters a set of filters to match and parse log entries
+ * @return a set of emmitters and parsed log entries matched by the filters
+ */
 export function expectEmittersAndEvents<T extends ExtendedEventFilter[]>(
     receipt: ContractReceipt,
     forwardOnly: boolean,
