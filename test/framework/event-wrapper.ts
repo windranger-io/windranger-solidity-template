@@ -44,6 +44,29 @@ function findEventArgs(
 export interface EventFactory<T = unknown> {
     expectOne(receipt: ContractReceipt, expected?: T): T
 
+    /**
+     * Parses logs of the receipt by the given filters.
+     * This function matches the provided sequence of filters agains logs.
+     *
+     * When forwardOnly is false only a matched log entry is removed from further matching;
+     * othterwise, all log entries before the matched entry are also excluded.
+     * Use forwardOnly = false for a distinct set of events to make sure that ordering is correct.
+     * Use forwardOnly = true to extract a few events of the same type when some of events are exact and some are not.
+     *
+     * NB! This function have a special handling for `indexed` event arguments
+     * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
+     * for filtering, but decoded fields will not have values, but special
+     * Indexed objects with hash.
+     *
+     * Throws an error when:
+     * - a filter N matches a log entry with lower index than a filter N-1
+     * - not all filters have a match
+     *
+     * @param receipt to provide logs for parsing
+     * @param expecteds a set of filters to match and parse log entries
+     * @param forwardOnly prevents backward logs matching when is true
+     * @return a set of parsed log entries matched by filters
+     */
     expectOrdered(
         receipt: ContractReceipt,
         expecteds: Partial<T>[],

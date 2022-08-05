@@ -87,7 +87,7 @@ type UnwrapEventFilters<T extends [...ExtendedEventFilter[]]> = T extends [
  *
  * NB! This function have a special handling for `indexed` event arguments
  * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
- * for filtering, but decded fields will not have values, but special
+ * for filtering, but decoded fields will not have values, but special
  * Indexed objects with hash.
  *
  * @param receipt to provide logs for parsing
@@ -115,7 +115,7 @@ export function expectEvents<T extends ExtendedEventFilter[]>(
  *
  * NB! This function have a special handling for `indexed` event arguments
  * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
- * for filtering, but decded fields will not have values, but special
+ * for filtering, but decoded fields will not have values, but special
  * Indexed objects with hash.
  *
  * Throws an error when:
