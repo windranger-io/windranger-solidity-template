@@ -155,7 +155,7 @@ describe('Tub', () => {
         )
 
         const eventStore0 = eventOf(tub, 'Store')
-        const eventMultiStore1 = eventOf(tub1, 'MultiStore')
+        const eventIndexed1 = eventOf(tub1, 'IndexedEvent')
         const eventStore2 = eventOf(tub2, 'Store')
 
         {
@@ -173,7 +173,7 @@ describe('Tub', () => {
             const events = expectEvents(
                 receipt,
                 // indexed strings/bytes can be used as filters, but cant be decoded into original values
-                eventMultiStore1.newFilter({boxValue: '+testValue'}),
+                eventIndexed1.newFilter({boxValue: '+testValue'}),
                 eventStore2.newFilter() // same as newFilter({})
             )
             expect(events.length).eq(2)
