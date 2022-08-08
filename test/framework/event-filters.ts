@@ -3,17 +3,20 @@ import {Log} from '@ethersproject/abstract-provider'
 import {expect} from 'chai'
 import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
 
-type DecodeFunc = (log: Log) => utils.Result
+type EventDataDecoder = (log: Log) => utils.Result
 
 export interface ExtendedEventFilter<T = object>
     extends TypedEventFilter<TypedEvent<unknown[], T>> {
     nonIndexed?: Record<string, unknown>
-    decodeEventData: DecodeFunc
+    decodeEventData: EventDataDecoder
 }
 
 function decodeEventLogs(
     logs: Array<Log>,
-    decoderLookup: (emitter: string, topic0: string) => DecodeFunc | undefined
+    decoderLookup: (
+        emitter: string,
+        topic0: string
+    ) => EventDataDecoder | undefined
 ): utils.Result[] {
     const found: utils.Result[] = []
     for (const entry of logs) {
@@ -31,8 +34,8 @@ function decodeEventLogs(
 
 function filtersToDecoders(
     filters: Array<ExtendedEventFilter>
-): Map<string, Map<string, DecodeFunc>> {
-    const result = new Map<string, Map<string, DecodeFunc>>()
+): Map<string, Map<string, EventDataDecoder>> {
+    const result = new Map<string, Map<string, EventDataDecoder>>()
     for (const filter of filters) {
         if (filter.address && filter.topics) {
             const eventType = filter.topics[0]
@@ -41,7 +44,7 @@ function filtersToDecoders(
                 let subMap = result.get(addr)
                 // eslint-disable-next-line no-undefined
                 if (subMap === undefined) {
-                    subMap = new Map<string, DecodeFunc>()
+                    subMap = new Map<string, EventDataDecoder>()
                     result.set(addr, subMap)
                 }
                 subMap.set(eventType, filter.decodeEventData)
@@ -188,8 +191,11 @@ function _orderedFilter(
 }
 
 function _matchTopics(actual: Log, expected: ExtendedEventFilter): boolean {
-    // eslint-disable-next-line no-undefined
-    if (expected.address !== undefined && actual.address !== expected.address) {
+    if (
+        // eslint-disable-next-line no-undefined
+        expected.address !== undefined &&
+        actual.address.toUpperCase() !== expected.address.toUpperCase()
+    ) {
         return false
     }
 

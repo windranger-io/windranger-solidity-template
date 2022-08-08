@@ -31,8 +31,10 @@ contract Tub is Ownable {
 
     function multiStore(string[] calldata boxValues) external {
         for (uint256 i = 0; i < boxValues.length; i++) {
-            _value = boxValues[i];
-            emit Store(_value);
+            emit Store(boxValues[i]);
+        }
+        if (boxValues.length > 0) {
+            _value = boxValues[boxValues.length - 1];
         }
     }
 
