@@ -1,14 +1,13 @@
 import {expect} from 'chai'
-import {
-    Contract,
-    ContractReceipt,
-    ContractTransaction,
-    Event,
-    EventFilter,
-    utils
-} from 'ethers'
+import {Contract, ContractReceipt, EventFilter, utils} from 'ethers'
 import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
+import {
+    expectEmittersAndEvents,
+    ExtendedEventFilter,
+    newExtendedEventFilter
+} from './event-filters'
 import {EventListener} from './event-listener'
+import {ContractReceiptSource, successfulTransaction} from './transaction'
 
 function findEventArgs(
     name: string,
@@ -42,14 +41,37 @@ function findEventArgs(
     return found
 }
 
-export type ContractReceiptSource =
-    | ContractReceipt
-    | Promise<ContractReceipt>
-    | ContractTransaction
-    | Promise<ContractTransaction>
-
 export interface EventFactory<T = unknown> {
     expectOne(receipt: ContractReceipt, expected?: T): T
+
+    /**
+     * Parses logs of the receipt by the given filters.
+     * This function matches the provided sequence of filters agains logs.
+     *
+     * When forwardOnly is false only a matched log entry is removed from further matching;
+     * othterwise, all log entries before the matched entry are also excluded.
+     * Use forwardOnly = false for a distinct set of events to make sure that ordering is correct.
+     * Use forwardOnly = true to extract a few events of the same type when some of events are exact and some are not.
+     *
+     * NB! This function have a special handling for `indexed` event arguments
+     * of dynamic types (`string`, `bytes`, `arrays`) - these types can be used
+     * for filtering, but decoded fields will not have values, but special
+     * Indexed objects with hash.
+     *
+     * Throws an error when:
+     * - a filter N matches a log entry with lower index than a filter N-1
+     * - not all filters have a match
+     *
+     * @param receipt to provide logs for parsing
+     * @param expecteds a set of filters to match and parse log entries
+     * @param forwardOnly prevents backward logs matching when is true
+     * @return a set of parsed log entries matched by filters
+     */
+    expectOrdered(
+        receipt: ContractReceipt,
+        expecteds: Partial<T>[],
+        forwardOnly?: boolean
+    ): T[]
 
     all<Result = T[]>(
         receipt: ContractReceipt,
@@ -63,27 +85,12 @@ export interface EventFactory<T = unknown> {
 
     toString(): string
     name(): string
-}
 
-export interface AttacheableEventFactory<T> extends EventFactory<T> {
-    from(c: Contract): AttachedEventFactory<T>
-}
-
-export interface AttachedEventFactory<T> extends AttacheableEventFactory<T> {
-    //    verify(event: Event, expected?: T): T
     newListener(): EventListener<T>
-}
-
-async function receiptOf(av: ContractReceiptSource): Promise<ContractReceipt> {
-    const v = await av
-    const receipt = 'gasUsed' in v ? v : await v.wait(1)
-
-    // Transaction status code https://eips.ethereum.org/EIPS/eip-1066
-    const SUCCESS = 1
-
-    expect(receipt).is.not.undefined
-    expect(receipt.status).equals(SUCCESS)
-    return receipt
+    newFilter(
+        args?: Partial<T>,
+        emitterAddress?: string | '*'
+    ): ExtendedEventFilter<T>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,8 +98,8 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
     template: E, // only for type
     customName: string,
     emitter: Contract
-): AttachedEventFactory<T> =>
-    new (class implements AttachedEventFactory<T> {
+): EventFactory<T> =>
+    new (class implements EventFactory<T> {
         expectOne(receipt: ContractReceipt, expected?: T): T {
             const args = findEventArgs(this.toString(), receipt, emitter)
 
@@ -101,6 +108,22 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
                 `Expecting a single event ${this.toString()}`
             ).equals(1)
             return this.verifyArgs(args[0], expected)
+        }
+
+        expectOrdered(
+            receipt: ContractReceipt,
+            expecteds: Partial<T>[],
+            forwardOnly?: boolean
+        ): T[] {
+            const filters = expecteds.map((expected) =>
+                this.newFilter(expected)
+            )
+            const [, events] = expectEmittersAndEvents(
+                receipt,
+                forwardOnly ?? false,
+                ...filters
+            )
+            return events
         }
 
         all<Result = T[]>(
@@ -124,7 +147,7 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             source: ContractReceiptSource,
             fn?: (args: T[]) => void
         ): Promise<ContractReceipt> {
-            const receipt = await receiptOf(source)
+            const receipt = await successfulTransaction(source)
             this.all(receipt, fn)
             return receipt
         }
@@ -137,33 +160,13 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return customName
         }
 
-        from(c: Contract): AttachedEventFactory<T> {
-            const fragment = c.interface.getEvent(this.toString())
-
-            if (!fragment || fragment.anonymous) {
-                throw new Error(
-                    `Event ${this.toString()} is unknown to the contract`
-                )
-            }
-
-            return _wrap(template, this.toString(), c)
-        }
-
-        verify(event: Event, expected?: Partial<T>): T {
-            expect(event.args).is.not.undefined
-            expect(event.event).eq(this.toString())
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return this.verifyArgs(event.args!, expected)
-        }
-
-        verifyArgs(args: utils.Result, expected?: Partial<T>): T {
+        private verifyArgs(args: utils.Result, expected?: T): T {
             const n = this.toString()
             // eslint-disable-next-line no-undefined
-            if (expected === undefined) {
-                _verifyByFragment(emitter.interface.getEvent(n), n, args)
-            } else {
+            if (expected !== undefined) {
                 _verifyByProperties(expected, n, args)
             }
+            _verifyByFragment(emitter.interface.getEvent(n), n, args)
             return args as unknown as T
         }
 
@@ -176,6 +179,19 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
                 _verifyByFragment(fragment, n, args)
                 return args as unknown as T
             })
+        }
+
+        newFilter(
+            filter?: Partial<T>,
+            emitterAddress?: string
+        ): ExtendedEventFilter<T> {
+            const n = this.toString()
+            return newExtendedEventFilter<T>(
+                n,
+                emitterAddress ?? emitter.address,
+                emitter.interface,
+                filter ?? {}
+            )
         }
     })()
 
@@ -229,7 +245,7 @@ export const eventOf = <
 >(
     emitter: ContractEventFilters<F>,
     name: N
-): AttachedEventFactory<EventObjectType<E>> =>
+): EventFactory<EventObjectType<E>> =>
     _wrap(null as unknown as E, name, emitter)
 
 export const newEventListener = <
