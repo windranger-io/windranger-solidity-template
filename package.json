@@ -54,6 +54,7 @@
     "ethers": "5.6.9",
     "hardhat": "2.10.1",
     "hardhat-contract-tools": "windranger-io/hardhat-contract-tools#v1.0.1",
+    "ethers-contract-tools": "windranger-io/ethers-contract-tools#v0.9.1",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
     "mocha": "10.0.0",

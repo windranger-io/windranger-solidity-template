@@ -9,8 +9,8 @@ import {solidity} from 'ethereum-waffle'
 import {Box} from '../typechain-types'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {successfulTransaction} from './framework/transaction'
-import {eventOf} from './framework/event-wrapper'
+import {successfulTransaction} from 'ethers-contract-tools'
+import {eventOf} from './framework/events'
 
 // Wires up Waffle with Chai
 chai.use(solidity)

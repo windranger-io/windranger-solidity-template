@@ -14,8 +14,6 @@ import {
     upgradeContract
 } from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {occurrenceAtMost} from './framework/time'
-import {EventListener} from './framework/event-listener'
 import {ethers} from 'ethers'
 import {
     Box,
@@ -28,8 +26,9 @@ import {
     BoxWithSelfDestruct,
     BoxWithStruct
 } from '../typechain-types'
-import {newEventListener} from './framework/event-wrapper'
+import {EventListener, occurrenceAtMost} from 'ethers-contract-tools'
 import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
+import {eventOf} from './framework/events'
 
 // Wires Chai with Waffle and Promises
 chai.use(solidity)
@@ -45,7 +44,7 @@ describe('Box Upgrade contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy<Box>('Box')
-        upgradedListener = newEventListener(box, 'Upgraded')
+        upgradedListener = eventOf(box, 'Upgraded').newListener()
     })
 
     describe('upgrade', () => {
