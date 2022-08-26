@@ -21,7 +21,7 @@ chai.use(solidity)
 // Demo of using events
 describe('Events', () => {
     beforeEach(async () => {
-        tub = await deployContract<Tub>('Tub')
+        tub = await deployContract('Tub', [])
     })
 
     /* eslint-disable no-lone-blocks */
@@ -221,8 +221,8 @@ describe('Events', () => {
 
     describe('looking up events of different types and from different contracts', () => {
         it('single-event filters from a nested contract call', async () => {
-            const tub1 = await deployContract<Tub>('Tub')
-            const tub2 = await deployContract<Tub>('Tub')
+            const tub1 = await deployContract('Tub', [])
+            const tub2 = await deployContract('Tub', [])
 
             const eventIndexed1 = eventOf(tub1, 'IndexedEvent')
 
@@ -249,8 +249,8 @@ describe('Events', () => {
          * It is the best way, but events in Solidity must have names for relevant arguments
          */
         it('object-style filters', async () => {
-            const tub1 = await deployContract<Tub>('Tub')
-            const tub2 = await deployContract<Tub>('Tub')
+            const tub1 = await deployContract('Tub', [])
+            const tub2 = await deployContract('Tub', [])
 
             const receipt = await successfulTransaction(
                 tub.nestedStore('testValue', [tub1.address, tub2.address])
@@ -330,8 +330,8 @@ describe('Events', () => {
          * Applicable when filtering should use unnamed attributes of events
          */
         it('tuple-style filters', async () => {
-            const tub1 = await deployContract<Tub>('Tub')
-            const tub2 = await deployContract<Tub>('Tub')
+            const tub1 = await deployContract('Tub', [])
+            const tub2 = await deployContract('Tub', [])
 
             const receipt = await successfulTransaction(
                 tub.nestedStore('testValue', [tub1.address, tub2.address])
@@ -414,8 +414,8 @@ describe('Events', () => {
          * Applicable when filtering should use unnamed attributes of events
          */
         it('mix-style filters', async () => {
-            const tub1 = await deployContract<Tub>('Tub')
-            const tub2 = await deployContract<Tub>('Tub')
+            const tub1 = await deployContract('Tub', [])
+            const tub2 = await deployContract('Tub', [])
 
             const receipt = await successfulTransaction(
                 tub.nestedStore('testValue', [tub1.address, tub2.address])

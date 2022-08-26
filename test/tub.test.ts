@@ -34,7 +34,7 @@ describe('Tub', () => {
 
     // Before each test, deploy a fresh box (clean starting state)
     beforeEach(async () => {
-        tub = await deployContract<Tub>('Tub')
+        tub = await deployContract('Tub', [])
     })
 
     // Inner describes use the name or idea for the function they're unit testing

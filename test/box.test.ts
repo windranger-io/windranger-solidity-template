@@ -34,7 +34,7 @@ describe('Box', () => {
 
     // Before each test, deploy a fresh box (clean starting state)
     beforeEach(async () => {
-        box = await deployContract<Box>('Box')
+        box = await deployContract('Box', [])
         await successfulTransaction(box.initialize())
     })
 
