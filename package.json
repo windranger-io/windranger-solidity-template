@@ -1,18 +1,24 @@
 {
-  "name": "solidity-project-template",
+  "name": "@windranger-io/solidity-project-template",
   "version": "0.0.3",
   "description": "Everything you need for creating Solidity smart contract with TypeScript testing",
-  "private": true,
+  "license": "Apache-2.0",
+  "private": false,
   "directories": {
     "test": "test"
+  },
+  "publishConfig": {
+    "tag": "latest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/windranger-io/solidity-project-template"
   },
-  "keywords": [],
-  "author": "",
-  "license": "Apache-2.0",
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "developer-tools"
+  ],
   "scripts": {
     "build": "hardhat compile",
     "clean": "hardhat clean",
