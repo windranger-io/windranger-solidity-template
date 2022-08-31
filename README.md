@@ -51,5 +51,4 @@ npm test
 Setup and run instructions:
 
 - [Hardhat](./docs/tools/hardhat.md)
-- [PlantUML](./docs/tools/plantuml.md); UML diagram generation from code.
 - [Slither](./docs/tools/slither.md); Trail of Bits Solidity static analyzer.
