@@ -15,18 +15,8 @@ import {
 } from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {ethers} from 'ethers'
-import {
-    Box,
-    BoxExtension,
-    BoxTransparentProxy,
-    BoxWithConstructor,
-    BoxWithEnum,
-    BoxWithImmutableField,
-    BoxWithInitialValueField,
-    BoxWithSelfDestruct,
-    BoxWithStruct
-} from '../typechain-types'
-import {EventListener, occurrenceAtMost} from 'ethers-contract-tools'
+import {Box} from '../typechain-types'
+import {EventListener, occurrenceAtMost} from 'windranger-tools-ethers'
 import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
 import {eventOf} from './framework/events'
 

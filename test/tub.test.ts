@@ -9,7 +9,7 @@ import {solidity} from 'ethereum-waffle'
 import {Tub} from '../typechain-types'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {successfulTransaction} from 'ethers-contract-tools'
+import {successfulTransaction} from 'windranger-tools-ethers'
 import {eventOf} from './framework/events'
 
 // Wires up Waffle with Chai

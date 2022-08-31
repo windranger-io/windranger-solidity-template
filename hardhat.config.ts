@@ -3,7 +3,7 @@ import '@typechain/hardhat'
 import '@nomiclabs/hardhat-ethers'
 import '@openzeppelin/hardhat-upgrades'
 import '@nomiclabs/hardhat-waffle'
-import 'hardhat-contract-tools'
+import 'windranger-tools-hardhat'
 import {log} from './config/logging'
 
 /*

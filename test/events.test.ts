@@ -11,7 +11,7 @@ import {
     successfulTransaction,
     expectEmittersAndEvents,
     expectEvents
-} from 'ethers-contract-tools'
+} from 'windranger-tools-ethers'
 import {utils} from 'ethers'
 import {eventOf} from './framework/events'
 
@@ -53,11 +53,11 @@ describe('Events', () => {
             const receipt = await successfulTransaction(tub.store(value))
 
             // check for only one event of the given type and template
-            eventOf(tub, 'Store').expectOne(receipt, {value})
+            eventOf(tub, 'Store').expectOne(receipt, [value])
 
             // or get only one event of the given type
-            const ev = eventOf(tub, 'Store').expectOne(receipt)
-            expect(ev.value).eq(value)
+            const ev = eventOf(tub, 'Store').withTuple.expectOne(receipt)
+            expect(ev[0]).eq(value)
         })
 
         it('all-event sync/async', async () => {

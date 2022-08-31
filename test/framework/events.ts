@@ -1,5 +1,5 @@
 import {BaseContract} from 'ethers'
-import {wrapEventType} from 'ethers-contract-tools'
+import {wrapEventType} from 'windranger-tools-ethers'
 import {TypedEvent, TypedEventFilter} from '../../typechain-types/common'
 
 /*

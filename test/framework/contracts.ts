@@ -3,7 +3,7 @@ import {ethers, upgrades} from 'hardhat'
 import {expect} from 'chai'
 import {ContractReceipt, ContractTransaction} from 'ethers'
 
-import {wrapImportedFactories} from 'ethers-contract-tools/dist/tools/contract-wrappers'
+import {wrapImportedFactories} from 'windranger-tools-ethers/dist/tools/contract-wrappers'
 import * as types from '../../typechain-types'
 
 const typedFactories = wrapImportedFactories(types, signer(0))
