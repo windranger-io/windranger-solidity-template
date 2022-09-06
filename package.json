@@ -1,6 +1,6 @@
 {
   "name": "@windranger-io/solidity-project-template",
-  "version": "0.0.3",
+  "version": "0.1.1",
   "description": "Everything you need for creating Solidity smart contract with TypeScript testing",
   "license": "Apache-2.0",
   "private": false,
