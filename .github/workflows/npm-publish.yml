@@ -47,7 +47,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
       - name: Push version update (package.json)
-        run: git push
-        env:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: Updating package.json version to ${{ github.event.release.tag_name }}
+          commit-message: 'release: version update'
+
+
