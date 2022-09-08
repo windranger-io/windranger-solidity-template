@@ -15,7 +15,6 @@ import {
 } from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {occurrenceAtMost} from './framework/time'
-import {EventListener} from './framework/event-listener'
 import {ethers} from 'ethers'
 import {
     Box,
@@ -29,7 +28,6 @@ import {
     BoxWithStruct
 } from '../typechain-types'
 import {newEventListener} from './framework/event-wrapper'
-import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
 
 // Wires Chai with Waffle and Promises
 chai.use(solidity)
@@ -45,13 +43,18 @@ describe('Box Upgrade contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy<Box>('Box')
-        upgradedListener = newEventListener(box, 'Upgraded')
     })
 
     describe('upgrade', () => {
         it('extension contract', async () => {
             const beforeImplementationAddress = await box.implementation()
             const beforeUpgradeAddress = box.address
+
+            const upgradedListener = newEventListener(
+                box,
+                'Upgraded',
+                box.deployTransaction.blockNumber ?? 0
+            )
 
             const upgradedBonds = await upgradeContract<BoxExtension>(
                 'BoxExtension',
@@ -154,5 +157,4 @@ describe('Box Upgrade contract', () => {
     let admin: SignerWithAddress
     let nonAdmin: SignerWithAddress
     let box: Box
-    let upgradedListener: EventListener<UpgradedEventObject>
 })

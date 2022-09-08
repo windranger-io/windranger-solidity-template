@@ -86,7 +86,7 @@ export interface EventFactory<T = unknown> {
     toString(): string
     name(): string
 
-    newListener(): EventListener<T>
+    newListener(afterBlock?: number): EventListener<T>
     newFilter(
         args?: Partial<T>,
         emitterAddress?: string | '*'
@@ -170,15 +170,20 @@ const _wrap = <T, E extends TypedEvent<any, T>>(
             return args as unknown as T
         }
 
-        newListener(): EventListener<T> {
+        newListener(afterBlock?: number): EventListener<T> {
             const n = this.toString()
 
             const fragment = emitter.interface.getEvent(n)
-            return new EventListener<T>(emitter, n, (event) => {
-                const args = event.args ?? ({} as utils.Result)
-                _verifyByFragment(fragment, n, args)
-                return args as unknown as T
-            })
+            return new EventListener<T>(
+                emitter,
+                n,
+                (event) => {
+                    const args = event.args ?? ({} as utils.Result)
+                    _verifyByFragment(fragment, n, args)
+                    return args as unknown as T
+                },
+                afterBlock
+            )
         }
 
         newFilter(
@@ -212,7 +217,7 @@ const _verifyByProperties = <T>(
     name: string,
     args: utils.Result
 ) => {
-    Object.entries(expected).forEach((param) => {
+    Object.entries(expected as unknown as object).forEach((param) => {
         const propName = param[0]
         expect(
             args[propName],
@@ -254,5 +259,7 @@ export const newEventListener = <
     E extends EventFilterType<ReturnType<F[N]>>
 >(
     emitter: ContractEventFilters<F>,
-    name: N
-): EventListener<EventObjectType<E>> => eventOf(emitter, name).newListener()
+    name: N,
+    afterBlock?: number
+): EventListener<EventObjectType<E>> =>
+    eventOf(emitter, name).newListener(afterBlock)

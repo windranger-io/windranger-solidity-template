@@ -17,10 +17,14 @@ export class EventListener<T> {
     constructor(
         contract: BaseContract,
         eventName: string,
-        convert: EventConverter<T>
+        convert: EventConverter<T>,
+        afterBlock?: number
     ) {
+        const blockNumber = afterBlock ?? -1
         captureEvents(contract, eventName, (event) => {
-            this._events.push(convert(event))
+            if (event.blockNumber > blockNumber) {
+                this._events.push(convert(event))
+            }
         })
     }
 
