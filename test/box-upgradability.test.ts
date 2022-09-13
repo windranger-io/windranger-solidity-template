@@ -16,7 +16,10 @@ import {
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {ethers} from 'ethers'
 import {Box} from '../typechain-types'
-import {EventListener, occurrenceAtMost} from 'windranger-tools-ethers'
+import {
+    EventListener,
+    occurrenceAtMost
+} from '@windranger-io/windranger-tools-ethers'
 import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
 import {eventOf} from './framework/events'
 

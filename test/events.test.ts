@@ -11,7 +11,7 @@ import {
     successfulTransaction,
     expectEmittersAndEvents,
     expectEvents
-} from 'windranger-tools-ethers'
+} from '@windranger-io/windranger-tools-ethers'
 import {utils} from 'ethers'
 import {eventOf} from './framework/events'
 
