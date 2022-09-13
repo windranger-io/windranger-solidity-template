@@ -16,11 +16,7 @@ import {
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
 import {ethers} from 'ethers'
 import {Box} from '../typechain-types'
-import {
-    EventListener,
-    occurrenceAtMost
-} from '@windranger-io/windranger-tools-ethers'
-import {UpgradedEventObject} from '../typechain-types/contracts/test/Box'
+import {occurrenceAtMost} from '@windranger-io/windranger-tools-ethers'
 import {eventOf} from './framework/events'
 
 // Wires Chai with Waffle and Promises
@@ -37,13 +33,16 @@ describe('Box Upgrade contract', () => {
 
     beforeEach(async () => {
         box = await deployContractWithProxy('Box', [], admin)
-        upgradedListener = eventOf(box, 'Upgraded').newListener()
     })
 
     describe('upgrade', () => {
         it('extension contract', async () => {
             const beforeImplementationAddress = await box.implementation()
             const beforeUpgradeAddress = box.address
+
+            const upgradedListener = eventOf(box, 'Upgraded').newListener(
+                box.deployTransaction.blockNumber
+            )
 
             const upgradedBonds = await upgradeContract(
                 'BoxExtension',
@@ -131,5 +130,4 @@ describe('Box Upgrade contract', () => {
     let admin: SignerWithAddress
     let nonAdmin: SignerWithAddress
     let box: Box
-    let upgradedListener: EventListener<UpgradedEventObject>
 })
