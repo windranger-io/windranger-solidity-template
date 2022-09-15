@@ -14,20 +14,10 @@ import {
     upgradeContract
 } from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {occurrenceAtMost} from './framework/time'
 import {ethers} from 'ethers'
-import {
-    Box,
-    BoxExtension,
-    BoxTransparentProxy,
-    BoxWithConstructor,
-    BoxWithEnum,
-    BoxWithImmutableField,
-    BoxWithInitialValueField,
-    BoxWithSelfDestruct,
-    BoxWithStruct
-} from '../typechain-types'
-import {newEventListener} from './framework/event-wrapper'
+import {Box} from '../typechain-types'
+import {occurrenceAtMost} from '@windranger-io/windranger-tools-ethers'
+import {eventOf} from './framework/events'
 
 // Wires Chai with Waffle and Promises
 chai.use(solidity)
@@ -42,7 +32,7 @@ describe('Box Upgrade contract', () => {
     })
 
     beforeEach(async () => {
-        box = await deployContractWithProxy<Box>('Box')
+        box = await deployContractWithProxy('Box', [], admin)
     })
 
     describe('upgrade', () => {
@@ -50,13 +40,11 @@ describe('Box Upgrade contract', () => {
             const beforeImplementationAddress = await box.implementation()
             const beforeUpgradeAddress = box.address
 
-            const upgradedListener = newEventListener(
-                box,
-                'Upgraded',
-                box.deployTransaction.blockNumber ?? 0
+            const upgradedListener = eventOf(box, 'Upgraded').newListener(
+                box.deployTransaction.blockNumber
             )
 
-            const upgradedBonds = await upgradeContract<BoxExtension>(
+            const upgradedBonds = await upgradeContract(
                 'BoxExtension',
                 box.address
             )
@@ -80,17 +68,14 @@ describe('Box Upgrade contract', () => {
         })
 
         it('new struct is fine', async () =>
-            upgradeContract<BoxWithStruct>('BoxWithStruct', box.address))
+            upgradeContract('BoxWithStruct', box.address))
 
         it('new enum is fine', async () =>
-            upgradeContract<BoxWithEnum>('BoxWithEnum', box.address))
+            upgradeContract('BoxWithEnum', box.address))
 
         it('no constructor', async () => {
             await expect(
-                upgradeContract<BoxWithConstructor>(
-                    'BoxWithConstructor',
-                    box.address
-                )
+                upgradeContract('BoxWithConstructor', box.address)
             ).to.be.eventually.rejectedWith(
                 'Contract `BoxWithConstructor` has a constructor'
             )
@@ -98,10 +83,7 @@ describe('Box Upgrade contract', () => {
 
         it('no field with initial value', async () => {
             await expect(
-                upgradeContract<BoxWithInitialValueField>(
-                    'BoxWithInitialValueField',
-                    box.address
-                )
+                upgradeContract('BoxWithInitialValueField', box.address)
             ).to.be.eventually.rejectedWith(
                 'Variable `_initiallyPopulatedValue` is assigned an initial value'
             )
@@ -109,10 +91,7 @@ describe('Box Upgrade contract', () => {
 
         it('no immutable field', async () => {
             await expect(
-                upgradeContract<BoxWithImmutableField>(
-                    'BoxWithImmutableField',
-                    box.address
-                )
+                upgradeContract('BoxWithImmutableField', box.address)
             ).to.be.eventually.rejectedWith(
                 'Variable `_neverGoingToChange` is immutable'
             )
@@ -120,10 +99,7 @@ describe('Box Upgrade contract', () => {
 
         it('no self destruct', async () => {
             await expect(
-                upgradeContract<BoxWithSelfDestruct>(
-                    'BoxWithSelfDestruct',
-                    box.address
-                )
+                upgradeContract('BoxWithSelfDestruct', box.address)
             ).to.be.eventually.rejectedWith(
                 'Use of selfdestruct is not allowed'
             )
@@ -131,10 +107,7 @@ describe('Box Upgrade contract', () => {
 
         it('only UUPS proxy', async () => {
             await expect(
-                upgradeContract<BoxTransparentProxy>(
-                    'BoxTransparentProxy',
-                    box.address
-                )
+                upgradeContract('BoxTransparentProxy', box.address)
             ).to.be.eventually.rejectedWith(
                 'Requested an upgrade of kind transparent but proxy is uups'
             )
@@ -147,7 +120,7 @@ describe('Box Upgrade contract', () => {
 
             // upgrades are fixed to use the first signer (owner) account
             await expect(
-                upgradeContract<Box>('Box', box.address)
+                upgradeContract('Box', box.address)
             ).to.be.revertedWith(
                 "reverted with reason string 'Ownable: caller is not the owner"
             )

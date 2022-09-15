@@ -9,8 +9,8 @@ import {solidity} from 'ethereum-waffle'
 import {Box} from '../typechain-types'
 import {deployContract, signer} from './framework/contracts'
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {successfulTransaction} from './framework/transaction'
-import {eventOf} from './framework/event-wrapper'
+import {successfulTransaction} from '@windranger-io/windranger-tools-ethers'
+import {eventOf} from './framework/events'
 
 // Wires up Waffle with Chai
 chai.use(solidity)
@@ -34,7 +34,7 @@ describe('Box', () => {
 
     // Before each test, deploy a fresh box (clean starting state)
     beforeEach(async () => {
-        box = await deployContract<Box>('Box')
+        box = await deployContract('Box', [])
         await successfulTransaction(box.initialize())
     })
 

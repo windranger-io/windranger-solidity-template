@@ -29,7 +29,11 @@
     "lint-ts": "eslint . --ext .ts",
     "lint-sol": "solhint ./contracts/**/*.sol",
     "prepare": "husky install",
-    "test": "mocha --timeout 10000 --exit --recursive --require ts-node/register \"test/**/*.test.ts\""
+    "test": "mocha --timeout 10000 --exit --recursive --require ts-node/register \"test/**/*.test.ts\"",
+    "storage": "hardhat storage-layout --details",
+    "sizes": "hardhat contract-sizes --details --diff --size 20000",
+    "sizes:diff": "hardhat contract-sizes --details --changes",
+    "sizes:all": "hardhat contract-sizes"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.1.1",
@@ -54,6 +58,8 @@
     "ethereum-waffle": "3.4.4",
     "ethers": "5.7.0",
     "hardhat": "2.11.1",
+    "@windranger-io/windranger-tools-hardhat": "^1.0.3",
+    "@windranger-io/windranger-tools-ethers": "^1.0.2",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
     "mocha": "10.0.0",
